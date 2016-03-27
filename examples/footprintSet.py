@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -11,14 +11,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -32,11 +32,12 @@ import lsst.afw.geom as afwGeom
 import lsst.afw.detection as afwDetect
 import lsst.afw.display.ds9 as ds9
 
+
 def showPeaks(im=None, fs=None, frame=0):
     """Show the image and peaks"""
     if frame is None:
         return
-    
+
     if im:
         ds9.mtv(im, frame=frame)
 
@@ -46,15 +47,16 @@ def showPeaks(im=None, fs=None, frame=0):
                 for p in foot.getPeaks():
                     ds9.dot("+", p.getIx(), p.getIy(), size=0.4, ctype=ds9.RED, frame=frame)
 
+
 def run(frame=6):
     im = afwImage.MaskedImageF(afwGeom.Extent2I(14, 10))
     #
     # Populate the image with objects that we should detect
     #
     objects = []
-    objects.append([(4, 1, 10), (3, 2, 10), (4, 2, 20), (5, 2, 10), (4, 3, 10),])
+    objects.append([(4, 1, 10), (3, 2, 10), (4, 2, 20), (5, 2, 10), (4, 3, 10), ])
     objects.append([(9, 7, 30), (10, 7, 29), (12, 7, 28), (10, 8, 27), (11, 8, 26), (10, 4, -5)])
-    objects.append([(3, 8, 10), (4, 8, 10),])
+    objects.append([(3, 8, 10), (4, 8, 10), ])
 
     for obj in objects:
         for x, y, I in obj:

@@ -1,7 +1,7 @@
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -9,19 +9,19 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
-## \file
-## \brief Utilities to use with displaying images
+# \file
+# \brief Utilities to use with displaying images
 
 from __future__ import absolute_import, division, print_function
 
@@ -31,7 +31,8 @@ import lsst.afw.geom as afwGeom
 __all__ = (
     "Mosaic",
     "drawBBox", "drawFootprint", "drawCoaddInputs",
-    )
+)
+
 
 def _getDisplayFromDisplayOrFrame(display, frame=None):
     """!Return an afwDisplay.Display given either a display or a frame ID.
@@ -42,7 +43,7 @@ def _getDisplayFromDisplayOrFrame(display, frame=None):
     If the desired display is None, return None;
     if (display, frame) == ("deferToFrame", None), return the default display"""
 
-    import lsst.afw.display as afwDisplay # import locally to allow this file to be imported by __init__
+    import lsst.afw.display as afwDisplay  # import locally to allow this file to be imported by __init__
 
     if display in ("deferToFrame", None):
         if display is None and frame is None:
@@ -65,6 +66,7 @@ def _getDisplayFromDisplayOrFrame(display, frame=None):
     return display
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
 class Mosaic(object):
     """A class to handle mosaics of one or more identically-sized images (or Masks or MaskedImages)
@@ -101,6 +103,7 @@ class Mosaic(object):
 
     You can return the (ix, iy)th (or nth) bounding box (in pixels) with getBBox()
     """
+
     def __init__(self, gutter=3, background=0, mode="square"):
         self.gutter = gutter            # number of pixels between panels in a mosaic
         self.background = background    # value in gutters
@@ -114,7 +117,7 @@ class Mosaic(object):
         """Reset the list of images to be mosaiced"""
         self.images = []                # images to mosaic together
         self.labels = []                # labels for images
-        
+
     def append(self, image, label=None, ctype=None):
         """Add an image to the list of images to be mosaiced
         Set may be cleared with Mosaic.reset()
@@ -136,7 +139,7 @@ class Mosaic(object):
 
         Note that this mosaic is a patchwork of the input images;  if you want to
         make a mosaic of a set images of the sky, you probably want to use the coadd code
-        
+
         If display or frame (deprecated) is specified, display the mosaic
         """
 
@@ -172,7 +175,7 @@ class Mosaic(object):
 
             if nx > self.nImage:
                 nx = self.nImage
-                
+
             assert(nx*ny >= self.nImage)
         elif mode == "x":
             nx, ny = self.nImage, 1
@@ -190,7 +193,7 @@ class Mosaic(object):
 
         mosaic = images[0].Factory(
             afwGeom.Extent2I(nx*self.xsize + (nx - 1)*self.gutter, ny*self.ysize + (ny - 1)*self.gutter)
-            )
+        )
         try:
             mosaic.set(self.background)
         except AttributeError:
@@ -201,7 +204,7 @@ class Mosaic(object):
             smosaic = mosaic.Factory(mosaic, self.getBBox(i%nx, i//nx), afwImage.LOCAL)
             im = images[i]
 
-            if smosaic.getDimensions() != im.getDimensions(): # im is smaller than smosaic
+            if smosaic.getDimensions() != im.getDimensions():  # im is smaller than smosaic
                 llc = afwGeom.PointI((smosaic.getWidth() - im.getWidth())//2,
                                      (smosaic.getHeight() - im.getHeight())//2)
                 smosaic = smosaic.Factory(smosaic, afwGeom.Box2I(llc, im.getDimensions()), afwImage.LOCAL)
@@ -214,7 +217,7 @@ class Mosaic(object):
 
             if images == self.images:
                 self.drawLabels(display=display)
-            
+
         return mosaic
 
     def setGutter(self, gutter):
@@ -262,7 +265,7 @@ class Mosaic(object):
         display = _getDisplayFromDisplayOrFrame(display, frame)
         if not display:
             return
-            
+
         with display.Buffering():
             for i in range(len(labels)):
                 if labels[i]:
@@ -282,6 +285,7 @@ class Mosaic(object):
         """Number of images"""
         return len(self.images)
 
+
 def drawBBox(bbox, borderWidth=0.0, origin=None, display="deferToFrame", ctype=None, bin=1, frame=None):
     """Draw an afwImage::BBox on a display frame with the specified ctype.  Include an extra borderWidth pixels
 If origin is present, it's Added to the BBox
@@ -292,20 +296,25 @@ All BBox coordinates are divided by bin, as is right and proper for overlaying o
     x1, y1 = bbox.getMaxX(), bbox.getMaxY()
 
     if origin:
-        x0 += origin[0]; x1 += origin[0]
-        y0 += origin[1]; y1 += origin[1]
+        x0 += origin[0]
+        x1 += origin[0]
+        y0 += origin[1]
+        y1 += origin[1]
 
-    x0 /= bin; y0 /= bin
-    x1 /= bin; y1 /= bin
+    x0 /= bin
+    y0 /= bin
+    x1 /= bin
+    y1 /= bin
     borderWidth /= bin
-    
+
     display = _getDisplayFromDisplayOrFrame(display, frame)
     display.line([(x0 - borderWidth, y0 - borderWidth),
-              (x0 - borderWidth, y1 + borderWidth),
-              (x1 + borderWidth, y1 + borderWidth),
-              (x1 + borderWidth, y0 - borderWidth),
-              (x0 - borderWidth, y0 - borderWidth),
-              ], ctype=ctype)
+                  (x0 - borderWidth, y1 + borderWidth),
+                  (x1 + borderWidth, y1 + borderWidth),
+                  (x1 + borderWidth, y0 - borderWidth),
+                  (x0 - borderWidth, y0 - borderWidth),
+                  ], ctype=ctype)
+
 
 def drawFootprint(foot, borderWidth=0.5, origin=None, XY0=None, frame=None, ctype=None, bin=1,
                   peaks=False, symb="+", size=0.4, ctypePeak=None, display="deferToFrame"):
@@ -329,28 +338,34 @@ All Footprint coordinates are divided by bin, as is right and proper for overlay
             y, x0, x1 = s.getY(), s.getX0(), s.getX1()
 
             if origin:
-                x0 += origin[0]; x1 += origin[0]
+                x0 += origin[0]
+                x1 += origin[0]
                 y += origin[1]
 
-            x0 /= bin; x1 /= bin; y /= bin
+            x0 /= bin
+            x1 /= bin
+            y /= bin
 
             display.line([(x0 - borderWidth, y - borderWidth),
-                      (x0 - borderWidth, y + borderWidth),
-                      (x1 + borderWidth, y + borderWidth),
-                      (x1 + borderWidth, y - borderWidth),
-                      (x0 - borderWidth, y - borderWidth),
-                      ], ctype=ctype)
+                          (x0 - borderWidth, y + borderWidth),
+                          (x1 + borderWidth, y + borderWidth),
+                          (x1 + borderWidth, y - borderWidth),
+                          (x0 - borderWidth, y - borderWidth),
+                          ], ctype=ctype)
 
         if peaks:
             for p in foot.getPeaks():
                 x, y = p.getIx(), p.getIy()
 
                 if origin:
-                    x += origin[0]; y += origin[1]
+                    x += origin[0]
+                    y += origin[1]
 
-                x /= bin; y /= bin
+                x /= bin
+                y /= bin
 
                 display.dot(symb, x, y, size=size, ctype=ctypePeak)
+
 
 def drawCoaddInputs(exposure, frame=None, ctype=None, bin=1, display="deferToFrame"):
     """Draw the bounding boxes of input exposures to a coadd on a display frame with the specified ctype,
@@ -373,4 +388,4 @@ def drawCoaddInputs(exposure, frame=None, ctype=None, bin=1, display="deferToFra
             coaddCorners = [coaddWcs.skyToPixel(record.getWcs().pixelToSky(point)) + offset
                             for point in ccdCorners]
             display.line([(coaddCorners[i].getX()/bin, coaddCorners[i].getY()/bin)
-                      for i in range(-1, 4)], ctype=ctype)
+                          for i in range(-1, 4)], ctype=ctype)

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -11,14 +11,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -36,15 +36,16 @@ import lsst.afw.geom as afwGeom
 pexLog.Debug("lsst.afw", 0)
 
 MaxIter = 20
-MaxTime = 1.0 # seconds
+MaxTime = 1.0  # seconds
 
 afwdataDir = lsst.utils.getPackageDir("afwdata")
 
 InputMaskedImagePath = os.path.join(afwdataDir, "data", "med.fits")
 
+
 def getSpatialParameters(nKernelParams, func):
     """Get basic spatial parameters list
-    
+
     You may wish to tweak it up for specific cases (especially the lower order terms)
     """
     nCoeff = func.getNParameters()
@@ -56,43 +57,46 @@ def getSpatialParameters(nKernelParams, func):
         spParams[kernelTermInd][6:10] = [1.0e-9]*len(spParams[kernelTermInd][6:10])
     return spParams
 
+
 def getAnalyticKernel(kSize, imSize, spOrder):
     """Return spatially varying analytic kernel: a Gaussian
-    
+
     @param kSize: kernel size (scalar; height = width)
     @param x, y imSize: image size
     """
     gaussFunc = afwMath.GaussianFunction2D(1.0, 1.0, 0.0)
     polyFunc = afwMath.PolynomialFunction2D(spOrder)
     kernel = afwMath.AnalyticKernel(kSize, kSize, gaussFunc, polyFunc)
-    
+
     minSigma = 0.1
     maxSigma = 3.0
 
     spParams = getSpatialParameters(3, polyFunc)
     spParams[0][0:3] = [minSigma, (maxSigma - minSigma) / float(imSize[0]), 0.0]
     spParams[1][0:3] = [minSigma, 0.0, (maxSigma - minSigma) / float(imSize[1])]
-    kernel.setSpatialParameters(spParams);
+    kernel.setSpatialParameters(spParams)
     return kernel
+
 
 def getSeparableKernel(kSize, imSize, spOrder):
     """Return spatially varying separable kernel: a pair of 1-d Gaussians
-    
+
     @param kSize: kernel size (scalar; height = width)
     @param x, y imSize: image size
     """
     gaussFunc = afwMath.GaussianFunction1D(1)
     polyFunc = afwMath.PolynomialFunction2D(spOrder)
     kernel = afwMath.SeparableKernel(kSize, kSize, gaussFunc, gaussFunc, polyFunc)
-    
+
     minSigma = 0.1
     maxSigma = 3.0
 
     spParams = getSpatialParameters(2, polyFunc)
     spParams[0][0:3] = [minSigma, (maxSigma - minSigma) / float(imSize[0]), 0.0]
     spParams[1][0:3] = [minSigma, 0.0, (maxSigma - minSigma) / float(imSize[0])]
-    kernel.setSpatialParameters(spParams);
+    kernel.setSpatialParameters(spParams)
     return kernel
+
 
 def getDeltaLinearCombinationKernel(kSize, imSize, spOrder):
     """Return a LinearCombinationKernel of delta functions
@@ -104,13 +108,14 @@ def getDeltaLinearCombinationKernel(kSize, imSize, spOrder):
     for ctrX in range(kSize):
         for ctrY in range(kSize):
             kernelList.append(afwMath.DeltaFunctionKernel(kSize, kSize, afwGeom.Point2I(ctrX, ctrY)))
-            
+
     polyFunc = afwMath.PolynomialFunction2D(spOrder)
     kernel = afwMath.LinearCombinationKernel(kernelList, polyFunc)
-    
+
     spParams = getSpatialParameters(len(kernelList), polyFunc)
-    kernel.setSpatialParameters(spParams);
+    kernel.setSpatialParameters(spParams)
     return kernel
+
 
 def getGaussianLinearCombinationKernel(kSize, imSize, spOrder):
     """Return a LinearCombinationKernel with 5 bases, each a Gaussian
@@ -131,9 +136,9 @@ def getGaussianLinearCombinationKernel(kSize, imSize, spOrder):
 
     polyFunc = afwMath.PolynomialFunction2D(spOrder)
     kernel = afwMath.LinearCombinationKernel(kernelList, polyFunc)
-    
+
     spParams = getSpatialParameters(len(kernelList), polyFunc)
-    kernel.setSpatialParameters(spParams);
+    kernel.setSpatialParameters(spParams)
     return kernel
 
 
@@ -147,9 +152,9 @@ def timeConvolution(outImage, inImage, kernel, convControl):
 
     @return (elapsed time in seconds, number of iterations)
     """
-    startTime = time.time();
+    startTime = time.time()
     for nIter in range(1, MaxIter + 1):
-#        mathDetail.convolveWithInterpolation(outImage, inImage, kernel, convControl)
+        #        mathDetail.convolveWithInterpolation(outImage, inImage, kernel, convControl)
         afwMath.convolve(outImage, inImage, kernel, convControl)
         endTime = time.time()
         if endTime - startTime > MaxTime:
@@ -157,9 +162,10 @@ def timeConvolution(outImage, inImage, kernel, convControl):
 
     return (endTime - startTime, nIter)
 
+
 def timeSet(outImage, inImage, kernelFunction, kernelDescr, convControl, spOrder, doInterp=True):
     """Time a set of convolutions for various parameters
-    
+
     Inputs:
     ... the usual
     - spOrder: the order of the spatial Polynomial2 function
@@ -186,12 +192,13 @@ def timeSet(outImage, inImage, kernelFunction, kernelDescr, convControl, spOrder
             print "%d\t%d\t%d\t%d\t%0.2f" % (imSize[0], imSize[1], kSize, kSize, dur/float(nIter))
     print
 
+
 def run():
     convControl = afwMath.ConvolutionControl()
     convControl.setDoNormalize(True)
     spOrder = 3
     print "All kernels use a spatial model of a Polynomial2 of order %s" % (spOrder,)
-    
+
     for imageClass in (
         afwImage.ImageF,
         afwImage.ImageD,
@@ -208,15 +215,15 @@ def run():
         else:
             inImage = imageClass(sys.argv[1])
         outImage = imageClass(inImage.getDimensions())
-        
+
         timeSet(outImage, inImage, getAnalyticKernel,
-            "AnalyticKernel", convControl, spOrder=spOrder)
+                "AnalyticKernel", convControl, spOrder=spOrder)
         timeSet(outImage, inImage, getSeparableKernel,
-            "SeparableKernel", convControl, spOrder=spOrder, doInterp=False)
+                "SeparableKernel", convControl, spOrder=spOrder, doInterp=False)
         timeSet(outImage, inImage, getGaussianLinearCombinationKernel,
-            "LinearCombinationKernel with 5 Gaussian Basis Kernels", convControl, spOrder=spOrder)
+                "LinearCombinationKernel with 5 Gaussian Basis Kernels", convControl, spOrder=spOrder)
         timeSet(outImage, inImage, getDeltaLinearCombinationKernel,
-            "LinearCombinationKernel with Delta Function Basis", convControl, spOrder=spOrder)
+                "LinearCombinationKernel with Delta Function Basis", convControl, spOrder=spOrder)
 
 if __name__ == "__main__":
     run()

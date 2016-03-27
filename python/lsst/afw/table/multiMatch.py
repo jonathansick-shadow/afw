@@ -3,10 +3,11 @@ import collections
 import lsst.afw.geom
 from .tableLib import SchemaMapper, CoordKey, SourceRecord
 
+
 class MultiMatch(object):
 
     def __init__(self, schema, dataIdFormat, coordField="coord", idField="id", radius=None,
-        RecordClass=SourceRecord):
+                 RecordClass=SourceRecord):
         """Initialize a multi-catalog match.
 
         Arguments:

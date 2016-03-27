@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -10,19 +10,19 @@ from __future__ import absolute_import, division
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
-##\file
-## \brief Utilities to help write tests, mostly using numpy 
+# \file
+# \brief Utilities to help write tests, mostly using numpy
 import numpy as np
 
 import lsst.utils.tests
@@ -32,9 +32,10 @@ from .basicUtils import makeMaskedImageFromArrays
 # the other functions are hidden unless explicitly asked for
 __all__ = ["assertImagesNearlyEqual", "assertMasksEqual", "assertMaskedImagesNearlyEqual"]
 
+
 def makeGaussianNoiseMaskedImage(dimensions, sigma, variance=1.0):
     """Make a gaussian noise MaskedImageF
-    
+
     Inputs:
     - dimensions: dimensions of output array (cols, rows)
     - sigma; sigma of image plane's noise distribution
@@ -44,12 +45,13 @@ def makeGaussianNoiseMaskedImage(dimensions, sigma, variance=1.0):
     image = np.random.normal(loc=0.0, scale=sigma, size=npSize).astype(np.float32)
     mask = np.zeros(npSize, dtype=np.uint16)
     variance = np.zeros(npSize, dtype=np.float32) + variance
-    
+
     return makeMaskedImageFromArrays(image, mask, variance)
+
 
 @lsst.utils.tests.inTestCase
 def assertImagesNearlyEqual(testCase, image0, image1, skipMask=None,
-        rtol=1.0e-05, atol=1e-08, msg="Images differ"):
+                            rtol=1.0e-05, atol=1e-08, msg="Images differ"):
     """!Assert that two images are nearly equal, including non-finite values
 
     @param[in] testCase  unittest.TestCase instance the test is part of;
@@ -88,6 +90,7 @@ def assertImagesNearlyEqual(testCase, image0, image1, skipMask=None,
     if errStr:
         testCase.fail("%s: %s" % (msg, errStr))
 
+
 @lsst.utils.tests.inTestCase
 def assertMasksEqual(testCase, mask0, mask1, skipMask=None, msg="Masks differ"):
     """!Assert that two masks are equal
@@ -116,12 +119,13 @@ def assertMasksEqual(testCase, mask0, mask1, skipMask=None, msg="Masks differ"):
     if errStr:
         testCase.fail("%s: %s" % (msg, errStr))
 
+
 @lsst.utils.tests.inTestCase
 def assertMaskedImagesNearlyEqual(testCase, maskedImage0, maskedImage1,
-    doImage=True, doMask=True, doVariance=True, skipMask=None,
-    rtol=1.0e-05, atol=1e-08, msg="Masked images differ"):
+                                  doImage=True, doMask=True, doVariance=True, skipMask=None,
+                                  rtol=1.0e-05, atol=1e-08, msg="Masked images differ"):
     """!Assert that two masked images are nearly equal, including non-finite values
-    
+
     @param[in] testCase  unittest.TestCase instance the test is part of;
                         an object supporting one method: fail(self, msgStr)
     @param[in] maskedImage0  masked image 0 (an lsst.afw.image.MaskedImage or
@@ -174,8 +178,8 @@ def assertMaskedImagesNearlyEqual(testCase, maskedImage0, maskedImage1,
             # and mask is int of some kind
             for i in (0, 2):
                 assert arrList[i].shape == arrList[1].shape
-                assert arrList[i].dtype.kind in  ("b", "i", "u", "f", "c")
-            assert arrList[1].dtype.kind in  ("b", "i", "u")
+                assert arrList[i].dtype.kind in ("b", "i", "u", "f", "c")
+            assert arrList[1].dtype.kind in ("b", "i", "u")
         except Exception:
             raise TypeError("%s=%r is not a supported type" % (name, arg))
 
@@ -188,17 +192,18 @@ def assertMaskedImagesNearlyEqual(testCase, maskedImage0, maskedImage1,
 
         if planeName == "mask":
             errStr = imagesDiffer(maskedImageArrList0[ind], maskedImageArrList1[ind], skipMask=skipMask,
-                rtol=0, atol=0)
+                                  rtol=0, atol=0)
             if errStr:
                 errStrList.append(errStr)
         else:
             errStr = imagesDiffer(maskedImageArrList0[ind], maskedImageArrList1[ind],
-                skipMask=skipMask, rtol=rtol, atol=atol)
+                                  skipMask=skipMask, rtol=rtol, atol=atol)
             if errStr:
                 errStrList.append("%s planes differ: %s" % (planeName, errStr))
 
     if errStrList:
         testCase.fail("%s: %s" % (msg, "; ".join(errStrList)))
+
 
 def imagesDiffer(image0, image1, skipMask=None, rtol=1.0e-05, atol=1e-08):
     """!Compare the pixels of two image or mask arrays; return True if close, False otherwise
@@ -230,8 +235,8 @@ def imagesDiffer(image0, image1, skipMask=None, rtol=1.0e-05, atol=1e-08):
     or any are not of a numeric data type.
     """
     errStrList = []
-    imageArr0   = image0.getArray()   if hasattr(image0,   "getArray") else image0
-    imageArr1   = image1.getArray()   if hasattr(image1,   "getArray") else image1
+    imageArr0 = image0.getArray() if hasattr(image0, "getArray") else image0
+    imageArr1 = image1.getArray() if hasattr(image1, "getArray") else image1
     skipMaskArr = skipMask.getArray() if hasattr(skipMask, "getArray") else skipMask
 
     # check the inputs

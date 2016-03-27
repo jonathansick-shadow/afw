@@ -5,6 +5,7 @@ file should be deleted (it's only used after importing gdb.printing fails)
 import gdb
 import re
 
+
 class CitizenPrinter(object):
     "Print a Citizen"
 
@@ -13,10 +14,11 @@ class CitizenPrinter(object):
 
     def to_string(self):
         return "{0x%x %d %s 0x%x}" % (self.val, self.val["_CitizenId"],
-                                    self.val["_typeName"], self.val["_sentinel"])
+                                      self.val["_typeName"], self.val["_sentinel"])
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # afw
+
 
 class BaseSourceAttributesPrinter(object):
     "Print a BaseSourceAttributes"
@@ -27,6 +29,7 @@ class BaseSourceAttributesPrinter(object):
     def to_string(self):
         return "Base: {id=%d astrom=(%.3f, %.3f)}" % (self.val["_id"], self.val["_xAstrom"], self.val["_yAstrom"])
 
+
 class SourcePrinter(object):
     "Print a Source"
 
@@ -35,6 +38,7 @@ class SourcePrinter(object):
 
     def to_string(self):
         return "{id=%d astrom=(%.3f, %.3f)}" % (self.val["_id"], self.val["_xAstrom"], self.val["_yAstrom"])
+
 
 class FootprintPrinter(object):
     "Print a Footprint"
@@ -47,6 +51,7 @@ class FootprintPrinter(object):
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+
 class CoordinateBasePrinter(object):
     "Print a CoordinateBase"
 
@@ -57,14 +62,15 @@ class CoordinateBasePrinter(object):
         # Make sure &foo works, too.
         type = self.val.type
         if type.code == gdb.TYPE_CODE_REF:
-            type = type.target ()
+            type = type.target()
 
         return self.val["_vector"]["m_storage"]["m_data"]["array"]
 
-    def display_hint (self):
+    def display_hint(self):
         return "array"
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
 class ImagePrinter(object):
     "Print an ImageBase or derived class"
@@ -72,17 +78,17 @@ class ImagePrinter(object):
     def dimenStr(self, val=None):
         if val is None:
             val = self.val
-            
+
         # Make sure &foo works, too.
         type = val.type
         if type.code == gdb.TYPE_CODE_REF:
-            type = type.target ()
+            type = type.target()
 
         gilView = val["_gilView"]
         arr = val["_origin"]["_vector"]["m_storage"]["m_data"]["array"]
 
         return "%dx%d+%d+%d" % (
-            #val["getWidth"](), val["getHeight"](), 
+            #val["getWidth"](), val["getHeight"](),
             gilView["_dimensions"]["x"], gilView["_dimensions"]["y"],
             arr[0], arr[1])
 
@@ -96,11 +102,13 @@ class ImagePrinter(object):
     def to_string(self):
         return "%s(%s)" % (self.typeName(), self.dimenStr())
 
+
 class MaskedImagePrinter(ImagePrinter):
     "Print a MaskedImage"
 
     def to_string(self):
         return "%s(%s)" % (self.typeName(), self.dimenStr(self.val["_image"]["px"].dereference()))
+
 
 class ExposurePrinter(ImagePrinter):
     "Print an Exposure"
@@ -111,15 +119,16 @@ class ExposurePrinter(ImagePrinter):
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+
 class PrintImageCommand(gdb.Command):
     """Print an Image
 Usage: image x0 y0 [nx [ny] [centerPatch] [obeyXY0]]
 """
 
-    def __init__ (self):
-        super (PrintImageCommand, self).__init__ ("show image",
-                                                  gdb.COMMAND_DATA,
-                                                  gdb.COMPLETE_SYMBOL)
+    def __init__(self):
+        super(PrintImageCommand, self).__init__("show image",
+                                                gdb.COMMAND_DATA,
+                                                gdb.COMPLETE_SYMBOL)
 
     def get(self, var, x, y):
         if False:
@@ -135,7 +144,7 @@ Usage: image x0 y0 [nx [ny] [centerPatch] [obeyXY0]]
 
             return pixels["m_iterator"][x + y*step]["_v0"]
 
-    def invoke (self, args, fromTty):
+    def invoke(self, args, fromTty):
         self.dont_repeat()
 
         args = gdb.string_to_argv(args)
@@ -153,9 +162,9 @@ Usage: image x0 y0 [nx [ny] [centerPatch] [obeyXY0]]
 
         if var.type.code == gdb.TYPE_CODE_PTR:
             var = var.dereference()     # be nice
-            
+
         pixelTypeName = str(var.type.template_argument(0))
-        
+
         if len(args) < 2:
             raise gdb.GdbError("Please specify a pixel's x and y indexes")
 
@@ -220,7 +229,10 @@ PrintImageCommand()
 #
 # A "regular expression" printer which conforms to the
 # "SubPrettyPrinter" protocol from gdb.printing.
+
+
 class RxPrinter(object):
+
     def __init__(self, name, function):
         super(RxPrinter, self).__init__()
         self.name = name
@@ -235,7 +247,10 @@ class RxPrinter(object):
 # A pretty-printer that conforms to the "PrettyPrinter" protocol from
 # gdb.printing.  It can also be used directly as an old-style printer.
 #
+
+
 class Printer(object):
+
     def __init__(self, name):
         super(Printer, self).__init__()
         self.name = name
@@ -257,10 +272,10 @@ class Printer(object):
     def get_basic_type(type):
         # If it points to a reference, get the reference.
         if type.code == gdb.TYPE_CODE_REF:
-            type = type.target ()
+            type = type.target()
 
         # Get the unqualified type, stripped of typedefs.
-        type = type.unqualified ().strip_typedefs ()
+        type = type.unqualified().strip_typedefs()
 
         return type.tag
 
@@ -286,6 +301,7 @@ class Printer(object):
 
 printers = []
 
+
 def register(obj):
     "Register my pretty-printers with objfile Obj."
 
@@ -296,6 +312,7 @@ def register(obj):
         obj.pretty_printers.insert(0, p)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
 def build_afw_dictionary():
     printer = Printer("afw")
@@ -316,6 +333,7 @@ def build_afw_dictionary():
     return printer
 
 printers.append(build_afw_dictionary())
+
 
 def build_daf_base_dictionary():
     printer = Printer("daf::base")

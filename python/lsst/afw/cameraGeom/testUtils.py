@@ -6,7 +6,7 @@ import lsst.utils
 import lsst.afw.geom as afwGeom
 import lsst.afw.table as afwTable
 from .cameraGeomLib import PIXELS, TAN_PIXELS, PUPIL, FOCAL_PLANE, SCIENCE, ACTUAL_PIXELS, \
-                           CameraSys, Detector, Orientation
+    CameraSys, Detector, Orientation
 from .cameraConfig import DetectorConfig, CameraConfig
 from .cameraFactory import makeCameraFromCatalogs
 from .makePixelToTanPixel import makePixelToTanPixel
@@ -20,20 +20,21 @@ class DetectorWrapper(object):
     Intended for use with unit tests, thus saves a copy of all input parameters.
     Does not support setting details of amplifiers.
     """
+
     def __init__(self,
-        name="detector 1",
-        id=1,
-        detType=SCIENCE,
-        serial="xkcd722",
-        bbox=None,    # do not use mutable objects as defaults
-        numAmps=3,
-        pixelSize=(0.02, 0.02),
-        ampExtent=(5, 6),
-        orientation=Orientation(),
-        plateScale=20.0,
-        radialDistortion=0.925,
-        modFunc=None,
-    ):
+                 name="detector 1",
+                 id=1,
+                 detType=SCIENCE,
+                 serial="xkcd722",
+                 bbox=None,    # do not use mutable objects as defaults
+                 numAmps=3,
+                 pixelSize=(0.02, 0.02),
+                 ampExtent=(5, 6),
+                 orientation=Orientation(),
+                 plateScale=20.0,
+                 radialDistortion=0.925,
+                 modFunc=None,
+                 ):
         """!Construct a DetectorWrapper
 
         @param[in] name  detector name
@@ -109,11 +110,13 @@ class DetectorWrapper(object):
             self.transMap,
         )
 
+
 class CameraWrapper(object):
     """A simple Camera and the data used to construct it
 
     Intended for use with unit tests, thus saves some interesting information.
     """
+
     def __init__(self, plateScale=20.0, radialDistortion=0.925, isLsstLike=False):
         """!Construct a CameraWrapper
 
@@ -127,7 +130,7 @@ class CameraWrapper(object):
         """
         afwDir = lsst.utils.getPackageDir("afw")
         self._afwTestDir = os.path.join(afwDir, "tests")
-        
+
         # Info to store for unit tests
         self.plateScale = float(plateScale)
         self.radialDistortion = float(radialDistortion)
@@ -157,7 +160,7 @@ class CameraWrapper(object):
                 detectors.append(detectorProps)
         detectorConfigs = []
         for i, detector in enumerate(detectors):
-            detectorId = (i + 1) * 10 # to avoid simple 0, 1, 2...
+            detectorId = (i + 1) * 10  # to avoid simple 0, 1, 2...
             detectorName = detector['name']
             detConfig = DetectorConfig()
             detConfig.name = detectorName
@@ -191,7 +194,7 @@ class CameraWrapper(object):
         @param[in] isLsstLike  if True then there is one raw image per amplifier;
             if False then there is one raw image per detector
         """
-        readoutMap = {'LL':0, 'LR':1, 'UR':2, 'UL':3}
+        readoutMap = {'LL': 0, 'LR': 1, 'UR': 2, 'UL': 3}
         amps = []
         with open(ampFile) as fh:
             names = fh.readline().rstrip().lstrip("#").split("|")
@@ -212,20 +215,20 @@ class CameraWrapper(object):
             else:
                 ampCatalog = afwTable.AmpInfoCatalog(schema)
                 ampTablesDict[amp['ccd_name']] = ampCatalog
-                self.ampInfoDict[amp['ccd_name']] = {'namps':1, 'linInfo':{}}
+                self.ampInfoDict[amp['ccd_name']] = {'namps': 1, 'linInfo': {}}
             record = ampCatalog.addNew()
             bbox = afwGeom.Box2I(afwGeom.Point2I(int(amp['trimmed_xmin']), int(amp['trimmed_ymin'])),
-                             afwGeom.Point2I(int(amp['trimmed_xmax']), int(amp['trimmed_ymax'])))
+                                 afwGeom.Point2I(int(amp['trimmed_xmax']), int(amp['trimmed_ymax'])))
             rawBbox = afwGeom.Box2I(afwGeom.Point2I(int(amp['raw_xmin']), int(amp['raw_ymin'])),
-                             afwGeom.Point2I(int(amp['raw_xmax']), int(amp['raw_ymax'])))
+                                    afwGeom.Point2I(int(amp['raw_xmax']), int(amp['raw_ymax'])))
             rawDataBbox = afwGeom.Box2I(afwGeom.Point2I(int(amp['raw_data_xmin']), int(amp['raw_data_ymin'])),
-                             afwGeom.Point2I(int(amp['raw_data_xmax']), int(amp['raw_data_ymax'])))
+                                        afwGeom.Point2I(int(amp['raw_data_xmax']), int(amp['raw_data_ymax'])))
             rawHOverscanBbox = afwGeom.Box2I(afwGeom.Point2I(int(amp['hoscan_xmin']), int(amp['hoscan_ymin'])),
-                             afwGeom.Point2I(int(amp['hoscan_xmax']), int(amp['hoscan_ymax'])))
+                                             afwGeom.Point2I(int(amp['hoscan_xmax']), int(amp['hoscan_ymax'])))
             rawVOverscanBbox = afwGeom.Box2I(afwGeom.Point2I(int(amp['voscan_xmin']), int(amp['voscan_ymin'])),
-                             afwGeom.Point2I(int(amp['voscan_xmax']), int(amp['voscan_ymax'])))
+                                             afwGeom.Point2I(int(amp['voscan_xmax']), int(amp['voscan_ymax'])))
             rawPrescanBbox = afwGeom.Box2I(afwGeom.Point2I(int(amp['pscan_xmin']), int(amp['pscan_ymin'])),
-                             afwGeom.Point2I(int(amp['pscan_xmax']), int(amp['pscan_ymax'])))
+                                           afwGeom.Point2I(int(amp['pscan_xmax']), int(amp['pscan_ymax'])))
             xoffset = int(amp['x_offset'])
             yoffset = int(amp['y_offset'])
             flipx = bool(int(amp['flipx']))
@@ -274,7 +277,7 @@ class CameraWrapper(object):
             record.setReadoutCorner(readoutMap[readcorner])
             record.setGain(float(amp['gain']))
             record.setReadNoise(float(amp['readnoise']))
-            record.setLinearityCoeffs([float(amp['lin_coeffs']),])
+            record.setLinearityCoeffs([float(amp['lin_coeffs']), ])
             record.setLinearityType(str(amp['lin_type']))
             record.setHasRawInfo(True)
             record.setRawFlipX(flipx)
@@ -287,13 +290,13 @@ class CameraWrapper(object):
             record.set(linThreshKey, float(amp['lin_thresh']))
             record.set(linMaxKey, float(amp['lin_max']))
             record.set(linUnitsKey, str(amp['lin_units']))
-            #The current schema assumes third order coefficients
+            # The current schema assumes third order coefficients
             saveCoeffs = (float(amp['lin_coeffs']),)
             saveCoeffs += (numpy.nan, numpy.nan, numpy.nan)
             self.ampInfoDict[amp['ccd_name']]['linInfo'][amp['name']] = \
-            {'lincoeffs':saveCoeffs, 'lintype':str(amp['lin_type']),
-             'linthresh':float(amp['lin_thresh']), 'linmax':float(amp['lin_max']),
-             'linunits':str(amp['lin_units'])}
+                {'lincoeffs': saveCoeffs, 'lintype': str(amp['lin_type']),
+                 'linthresh': float(amp['lin_thresh']), 'linmax': float(amp['lin_max']),
+                 'linunits': str(amp['lin_units'])}
         return ampTablesDict
 
     def makeTestRepositoryItems(self, isLsstLike=False):
@@ -319,6 +322,6 @@ class CameraWrapper(object):
         tConfig.transform.active.transform.coeffs = radialDistortCoeffs
         tmc = afwGeom.TransformMapConfig()
         tmc.nativeSys = FOCAL_PLANE.getSysName()
-        tmc.transforms = {PUPIL.getSysName():tConfig}
+        tmc.transforms = {PUPIL.getSysName(): tConfig}
         camConfig.transformDict = tmc
-        return camConfig, ampCatalogDict 
+        return camConfig, ampCatalogDict

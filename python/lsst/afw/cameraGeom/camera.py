@@ -24,9 +24,11 @@ from .cameraGeomLib import CameraPoint, CameraSysPrefix, PIXELS
 from .detectorCollection import DetectorCollection
 import lsst.afw.geom as afwGeom
 
+
 class Camera(DetectorCollection):
     """!A collection of Detectors that also supports coordinate transformation
     """
+
     def __init__(self, name, detectorList, transformMap):
         """!Construct a Camera
 
@@ -68,11 +70,11 @@ class Camera(DetectorCollection):
     def _transformSingleSysArray(self, positionList, fromSys, toSys):
         """!Transform an array of points from once CameraSys to another CameraSys
         @warning This method only handles a single jump, not a transform linked by a common native sys.
-        
+
         @param[in] positionList List of Point2D objects, one per position
         @param[in] fromSys  Initial camera coordinate system
         @param[in] toSys  Destination camera coordinate system
-        
+
         @returns an array of Point2D objects containing the transformed coordinates in the destination system.
         """
         if fromSys.hasDetectorName():
@@ -124,7 +126,7 @@ class Camera(DetectorCollection):
         for detector in self:
             cameraSys = detector.makeCameraSys(PIXELS)
             detPoint = detector.transform(nativePoint, cameraSys)
-            #This is safe because CameraPoint is not templated and getPoint() returns a Point2D.
+            # This is safe because CameraPoint is not templated and getPoint() returns a Point2D.
             if afwGeom.Box2D(detector.getBBox()).contains(detPoint.getPoint()):
                 detectorList.append(detector)
         return detectorList
@@ -138,7 +140,7 @@ class Camera(DetectorCollection):
         corresponding point
         """
 
-        #transform the points to the native coordinate system
+        # transform the points to the native coordinate system
         nativePointList = self._transformSingleSysArray(cameraPointList, coordSys, self._nativeCameraSys)
 
         detectorList = []

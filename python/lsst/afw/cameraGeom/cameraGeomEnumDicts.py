@@ -23,9 +23,9 @@ from __future__ import absolute_import, division
 from . import cameraGeomLib
 
 DetectorTypeValNameDict = {
-    cameraGeomLib.SCIENCE:   "SCIENCE",
-    cameraGeomLib.FOCUS:     "FOCUS",
-    cameraGeomLib.GUIDER:    "GUIDER",
+    cameraGeomLib.SCIENCE: "SCIENCE",
+    cameraGeomLib.FOCUS: "FOCUS",
+    cameraGeomLib.GUIDER: "GUIDER",
     cameraGeomLib.WAVEFRONT: "WAVEFRONT",
 }
 DetectorTypeNameValDict = dict((val, key) for key, val in DetectorTypeValNameDict.iteritems())

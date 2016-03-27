@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division
-# 
+#
 # LSST Data Management System
 # Copyright 2015 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -10,14 +10,14 @@ from __future__ import absolute_import, division
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 """Utilities that should be imported into the lsst.afw.geom namespace when lsst.afw.geom is used
@@ -31,9 +31,10 @@ from . import geomLib
 
 __all__ = ["assertAnglesNearlyEqual", "assertPairsNearlyEqual", "assertBoxesNearlyEqual"]
 
+
 @lsst.utils.tests.inTestCase
 def assertAnglesNearlyEqual(testCase, ang0, ang1, maxDiff=0.001*geomLib.arcseconds,
-        ignoreWrap=True, msg="Angles differ"):
+                            ignoreWrap=True, msg="Angles differ"):
     """!Assert that two angles are nearly equal, ignoring wrap differences by default
 
     @param[in] testCase  unittest.TestCase instance the test is part of;
@@ -53,7 +54,8 @@ def assertAnglesNearlyEqual(testCase, ang0, ang1, maxDiff=0.001*geomLib.arcsecon
         measDiff.wrapCtr()
     if abs(measDiff) > maxDiff:
         testCase.fail("%s: measured difference %s arcsec > max allowed %s arcsec" %
-            (msg, measDiff.asArcseconds(), maxDiff.asArcseconds()))
+                      (msg, measDiff.asArcseconds(), maxDiff.asArcseconds()))
+
 
 @lsst.utils.tests.inTestCase
 def assertPairsNearlyEqual(testCase, pair0, pair1, maxDiff=1e-7, msg="Pairs differ"):
@@ -79,6 +81,7 @@ def assertPairsNearlyEqual(testCase, pair0, pair1, maxDiff=1e-7, msg="Pairs diff
     measDiff = math.hypot(*pairDiff)
     if measDiff > maxDiff:
         testCase.fail("%s: measured radial distance = %s > maxDiff = %s" % (msg, measDiff, maxDiff))
+
 
 @lsst.utils.tests.inTestCase
 def assertBoxesNearlyEqual(testCase, box0, box1, maxDiff=1e-7, msg="Boxes differ"):

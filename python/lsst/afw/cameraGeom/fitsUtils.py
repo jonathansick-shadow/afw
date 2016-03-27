@@ -1,8 +1,10 @@
-import re, warnings
+import re
+import warnings
 import lsst.afw.image as afwImage
 import lsst.afw.table as afwTable
 import lsst.afw.cameraGeom as afwCameraGeom
 import lsst.afw.geom as afwGeom
+
 
 def getByKey(metadata, key):
     """Wrapper for getting a value from a metadata object by key.
@@ -16,6 +18,7 @@ def getByKey(metadata, key):
     else:
         return None
 
+
 def setByKey(metadata, key, value, clobber):
     """Wrapper for setting a value in a metadata object.  Deals with case
        where the key already exists.
@@ -28,8 +31,10 @@ def setByKey(metadata, key, value, clobber):
     if key not in mdKeys or (key in mdKeys and clobber):
         metadata.set(key, value)
 
+
 class HeaderMap(dict):
     """ Class to hold mapping of header cards to attributes"""
+
     def addEntry(self, keyname, attribute_name, default=None, transform=lambda x: x):
         """Adds an entry to the registr
            @param[in] keyname         Key used to retrieve the header record
@@ -38,9 +43,9 @@ class HeaderMap(dict):
            @param[in] transform       Transform to apply to the header value before assigning it to the
                                       attribute.
         """
-        self.__setitem__(attribute_name, {'keyName':keyname,
-                                         'default':default,
-                                         'transform':transform})
+        self.__setitem__(attribute_name, {'keyName': keyname,
+                                          'default': default,
+                                          'transform': transform})
 
     def setAttributes(self, obj, metadata, doRaise=True):
         """Sets the attributes on the give object given a metadata object.
@@ -54,36 +59,42 @@ class HeaderMap(dict):
                 if value is not None:
                     self._applyVal(obj, value, key, attrDict['transform'])
                 else:
-                    #Only apply transform if the metadata has a value for this key
-                    #otherwise assume the default value is transformed.
+                    # Only apply transform if the metadata has a value for this key
+                    # otherwise assume the default value is transformed.
                     value = attrDict['default']
                     self._applyVal(obj, value, key, lambda x: x)
             except Exception, e:
                 if doRaise:
                     raise
                 else:
-                    warnings.warn('WARNING: Failed to set %s attribute with %s value: %s'%
+                    warnings.warn('WARNING: Failed to set %s attribute with %s value: %s' %
                                   (key, value, e.message))
 
     def _applyVal(self, obj, value, attrName, transform):
         raise NotImplementedError('Must be implemented in sub-class')
 
+
 class HeaderAmpMap(HeaderMap):
     """ Class to hold mapping of header cards to AmpInfoTable attributes
         The amp info is stored using setters, thus calling the attribute as a function.
     """
+
     def _applyVal(self, obj, value, attrName, transform):
         getattr(obj, attrName)(transform(value))
+
 
 class HeaderDetectorMap(HeaderMap):
     """ Class to hold mapping of header cards to Detector attributes
         Detector information is stored as attributes on a Config object.
     """
+
     def _applyVal(self, obj, value, attrName, transform):
         obj.__setattr__(attrName, transform(value))
 
+
 class DetectorBuilder(object):
-    def __init__(self, detectorFileName, ampFileNameList, inAmpCoords=True, plateScale=1., 
+
+    def __init__(self, detectorFileName, ampFileNameList, inAmpCoords=True, plateScale=1.,
                  radialCoeffs=(0., 1.), clobberMetadata=False, doRaise=True):
         ''' @param[in] detectorFileName  FITS file containing the detector description. 
                                          May use [] notation to specify an extension in an MEF.
@@ -127,11 +138,11 @@ class DetectorBuilder(object):
         """
 
         if self.inAmpCoords:
-            #Deal with DTM to get flipX and flipY for assembly and add as 'FLIPX', 'FLIPY'
-            #The DTM array is a transformation matrix.  As I understand it, it transforms between
-            #electronic and assembled coordintates.  As such, a negative value in the DTM1_1 spot
-            #corresponds to a flip of the x-axis and a negative value in the DTM2_2 spot
-            #corresponds to a flip of the y-axis.
+            # Deal with DTM to get flipX and flipY for assembly and add as 'FLIPX', 'FLIPY'
+            # The DTM array is a transformation matrix.  As I understand it, it transforms between
+            # electronic and assembled coordintates.  As such, a negative value in the DTM1_1 spot
+            # corresponds to a flip of the x-axis and a negative value in the DTM2_2 spot
+            # corresponds to a flip of the y-axis.
             dtm1 = getByKey(metadata, 'DTM1_1')
             dtm2 = getByKey(metadata, 'DTM2_2')
             if dtm1 is not None and dtm2 is not None:
@@ -141,22 +152,22 @@ class DetectorBuilder(object):
         else:
             setByKey(metadata, 'FLIPX', False, clobber)
             setByKey(metadata, 'FLIPY', True, clobber)
-            #I don't know how to figure out the read corner if already assembled
+            # I don't know how to figure out the read corner if already assembled
             setByKey(metadata, 'RDCRNR', None, clobber)
 
-        #Deal with NAXIS1, NAXIS2 to make rawBBox as 'RAWBBOX'
+        # Deal with NAXIS1, NAXIS2 to make rawBBox as 'RAWBBOX'
         xext = getByKey(metadata, 'NAXIS1')
         yext = getByKey(metadata, 'NAXIS2')
         if xext is not None and yext is not None:
             setByKey(metadata, 'RAWBBOX', '[%i:%i,%i:%i]'%(1, xext, 1, yext), clobber)
-        #Deal with DTV1, DTV2 to make 'XYOFF
+        # Deal with DTV1, DTV2 to make 'XYOFF
         dtv1 = getByKey(metadata, 'DTV1')
         dtv2 = getByKey(metadata, 'DTV2')
         if dtv1 is not None and dtv2 is not None:
             setByKey(metadata, 'XYOFF', [dtv1, dtv2], clobber)
-        #map biassec[1] to HOSCAN
-        #map biassec[3] to VOSCAN
-        #map biassec[2] to PRESCAN
+        # map biassec[1] to HOSCAN
+        # map biassec[3] to VOSCAN
+        # map biassec[2] to PRESCAN
         if metadata.isArray('BIASSEC'):
             keylist = ['HOSCAN', 'PRESCAN', 'VOSCAN']
             biassecs = getByKey(metadata, 'BIASSEC')
@@ -177,7 +188,7 @@ class DetectorBuilder(object):
                    ('DETSEC', 'setBBox', None, self._makeBbox),
                    ('GAIN', 'setGain', 1.),
                    ('RDNOISE', 'setReadNoise', 0.),
-                   ('SATURATE', 'setSaturation', 2<<15),
+                   ('SATURATE', 'setSaturation', 2 << 15),
                    ('RDCRNR', 'setReadoutCorner', afwTable.LL),
                    ('LINCOEFF', 'setLinearityCoeffs', [0., 1.]),
                    ('LINTYPE', 'setLinearityType', 'POLY'),
@@ -185,7 +196,7 @@ class DetectorBuilder(object):
                    ('DATASEC', 'setRawDataBBox', None, self._makeBbox),
                    ('FLIPX', 'setRawFlipX', False),
                    ('FLIPY', 'setRawFlipY', False),
-                   ('XYOFF', 'setRawXYOffset', afwGeom.ExtentI(0,0), self._makeExt),
+                   ('XYOFF', 'setRawXYOffset', afwGeom.ExtentI(0, 0), self._makeExt),
                    ('HOSCAN', 'setRawHorizontalOverscanBBox', emptyBBox, self._makeBbox),
                    ('VOSCAN', 'setRawVerticalOverscanBBox', emptyBBox, self._makeBbox),
                    ('PRESCAN', 'setRawPrescanBBox', emptyBBox, self._makeBbox),
@@ -234,14 +245,13 @@ class DetectorBuilder(object):
            @param[in] boxString  String describing the bounding box
            @return    Box2I for the bounding box
         """
-        #strip off brackets and split into parts
+        # strip off brackets and split into parts
         x1, x2, y1, y2 = [int(el) for el in re.split('[:,]', boxString.strip()[1:-1])]
         box = afwGeom.BoxI(afwGeom.PointI(x1, y1), afwGeom.PointI(x2, y2))
-        #account for the difference between FITS convention and LSST convention for
-        #index of LLC.
+        # account for the difference between FITS convention and LSST convention for
+        # index of LLC.
         box.shift(afwGeom.Extent2I(-1, -1))
         return box
-
 
     def _getBboxX0(self, boxString):
         return self._makeBbox(boxString).getMinX()
@@ -283,7 +293,7 @@ class DetectorBuilder(object):
         detConfig = afwCameraGeom.DetectorConfig()
         self.defaultDetectorMap.setAttributes(detConfig, self.detectorMetadata, self.doRaise)
         self.detector = afwCameraGeom.makeDetector(detConfig, ampInfo, self.focalPlaneToPupil,
-                self.plateScale)
+                                                   self.plateScale)
         return self.detector
 
     def makeCalib(self):

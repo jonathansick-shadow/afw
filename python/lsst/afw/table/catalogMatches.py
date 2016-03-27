@@ -1,7 +1,7 @@
-# 
+#
 # LSST Data Management System
 # Copyright 2008-2016 AURA/LSST.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -9,14 +9,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <https://www.lsstcorp.org/LegalNotices/>.
 #
 from __future__ import absolute_import
@@ -28,6 +28,7 @@ from .tableLib import (BaseCatalog, SimpleCatalog, SourceCatalog, SimpleTable, S
 from lsst.utils import getPackageDir
 
 __all__ = ["makeMergedSchema", "copyIntoCatalog", "matchesToCatalog", "matchesFromCatalog"]
+
 
 def makeMapper(sourceSchema, targetSchema, sourcePrefix=None, targetPrefix=None):
     """Create a SchemaMapper between the input source and target schemas
@@ -50,6 +51,7 @@ def makeMapper(sourceSchema, targetSchema, sourcePrefix=None, targetPrefix=None)
         m.addMapping(key, (targetPrefix or "") + keyName)
     return m
 
+
 def makeMergedSchema(sourceSchema, targetSchema, sourcePrefix=None, targetPrefix=None):
     """Return a schema that is a deep copy of a mapping between source and target schemas
     \param[in]  sourceSchema  input source schema that fields will be mapped from
@@ -60,6 +62,7 @@ def makeMergedSchema(sourceSchema, targetSchema, sourcePrefix=None, targetPrefix
     \return     schema        schema that is the result of the mapping between source and target schemas
     """
     return makeMapper(sourceSchema, targetSchema, sourcePrefix, targetPrefix).getOutputSchema()
+
 
 def copyIntoCatalog(catalog, target, sourceSchema=None, sourcePrefix=None, targetPrefix=None):
     """Copy entries from one Catalog into another
@@ -84,6 +87,7 @@ def copyIntoCatalog(catalog, target, sourceSchema=None, sourcePrefix=None, targe
     m = makeMapper(sourceSchema, targetSchema, sourcePrefix, targetPrefix)
     for rFrom, rTo in zip(catalog, target):
         rTo.assign(rFrom, m)
+
 
 def matchesToCatalog(matches, matchMeta):
     """Denormalise matches into a Catalog of "unpacked matches"
@@ -122,6 +126,7 @@ def matchesToCatalog(matches, matchMeta):
     mergedCatalog.getTable().setMetadata(matchMeta)
 
     return mergedCatalog
+
 
 def matchesFromCatalog(catalog, sourceSlotConfig=None):
     """Generate a list of ReferenceMatches from a Catalog of "unpacked matches"

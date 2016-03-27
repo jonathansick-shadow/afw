@@ -1,10 +1,10 @@
 #!/usr/bin/env python2
 from __future__ import absolute_import, division
 
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@ from __future__ import absolute_import, division
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -54,6 +54,7 @@ except NameError:
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+
 class ImagePcaTestCase(unittest.TestCase):
     """A test case for ImagePca"""
 
@@ -62,10 +63,10 @@ class ImagePcaTestCase(unittest.TestCase):
 
     def tearDown(self):
         del self.ImageSet
-    
+
     def testInnerProducts(self):
         """Test inner products"""
-        
+
         width, height = 10, 20
         im1 = afwImage.ImageF(afwGeom.Extent2I(width, height))
         val1 = 10
@@ -105,7 +106,7 @@ class ImagePcaTestCase(unittest.TestCase):
             self.ImageSet.addImage(im, 0.0)
 
         self.assertRaises(pexExcept.OutOfRangeError, tst)
-        
+
     def testMean(self):
         """Test calculating mean image"""
 
@@ -121,7 +122,7 @@ class ImagePcaTestCase(unittest.TestCase):
             meanVal += val
 
         meanVal = meanVal/len(values)
-        
+
         mean = self.ImageSet.getMean()
 
         self.assertEqual(mean.getWidth(), width)
@@ -145,7 +146,7 @@ class ImagePcaTestCase(unittest.TestCase):
             period = 5*(i+1)
             fx = np.sin(2*math.pi/period*x + 2*math.pi/numBases*i)
             fy = np.sin(2*math.pi/period*y + 2*math.pi/numBases*i)
-            array[x,y] = fx + fy
+            array[x, y] = fx + fy
             bases.append(im)
 
         if display:
@@ -213,6 +214,7 @@ class ImagePcaTestCase(unittest.TestCase):
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
+
 def suite():
     """Returns a suite containing all the test cases in this module."""
 
@@ -222,6 +224,7 @@ def suite():
     suites += unittest.makeSuite(ImagePcaTestCase)
     suites += unittest.makeSuite(utilsTests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests"""

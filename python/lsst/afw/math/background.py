@@ -1,7 +1,7 @@
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -9,14 +9,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 import os
@@ -26,13 +26,14 @@ import lsst.afw.image as afwImage
 from lsst.afw.fits import FitsError, MemFileManager, reduceToFits
 import mathLib as afwMath
 
+
 class BackgroundList(object):
     """A list-like class to contain a list of (afwMath.Background, interpStyle, undersampleStyle) tuples
 
 In deference to the deprecated-but-not-yet-removed Background.getImage() API, we also accept a single
 afwMath.Background and extract the interpStyle and undersampleStyle from the as-used values
     """
-    
+
     def __init__(self, *args):
         self._backgrounds = []
         for a in args:
@@ -128,8 +129,8 @@ afwMath.Background and extract the interpStyle and undersampleStyle from the as-
             md.set("BKGD_WIDTH", bbox.getWidth())
             md.set("BKGD_HEIGHT", bbox.getHeight())
 
-            statsImage.getImage().writeFits(   fileName, md, "w" if i == 0 else "a")
-            statsImage.getMask().writeFits(    fileName, md, "a")
+            statsImage.getImage().writeFits(fileName, md, "w" if i == 0 else "a")
+            statsImage.getMask().writeFits(fileName, md, "a")
             statsImage.getVariance().writeFits(fileName, md, "a")
 
     @staticmethod
@@ -153,22 +154,24 @@ afwMath.Background and extract the interpStyle and undersampleStyle from the as-
 
             md = dafBase.PropertyList()
             try:
-                img = afwImage.ImageF(fileName, hdu, md); hdu += 1
+                img = afwImage.ImageF(fileName, hdu, md)
+                hdu += 1
             except FitsError:
                 break
 
-            msk = afwImage.MaskU( fileName, hdu);     hdu += 1
+            msk = afwImage.MaskU(fileName, hdu)
+            hdu += 1
             var = afwImage.ImageF(fileName, hdu)
 
             statsImage = afwImage.makeMaskedImage(img, msk, var)
 
             x0 = md.get("BKGD_X0")
             y0 = md.get("BKGD_Y0")
-            width  = md.get("BKGD_WIDTH")
+            width = md.get("BKGD_WIDTH")
             height = md.get("BKGD_HEIGHT")
             imageBBox = afwGeom.BoxI(afwGeom.PointI(x0, y0), afwGeom.ExtentI(width, height))
 
-            interpStyle =      md.get("INTERPSTYLE")
+            interpStyle = md.get("INTERPSTYLE")
             undersampleStyle = md.get("UNDERSAMPLESTYLE")
 
             # Older outputs won't have APPROX* settings.  Provide alternative defaults.
@@ -176,7 +179,7 @@ afwMath.Background and extract the interpStyle and undersampleStyle from the as-
             #       math::Chebyshev1Function2.  Setting approxOrderY = -1 is equivalent
             #       to saying approxOrderY = approxOrderX.
             approxStyle = md.get("APPROXSTYLE") if "APPROXSTYLE" in md.names() \
-                          else afwMath.ApproximateControl.UNKNOWN
+                else afwMath.ApproximateControl.UNKNOWN
             approxOrderX = md.get("APPROXORDERX") if "APPROXORDERX" in md.names() else 1
             approxOrderY = md.get("APPROXORDERY") if "APPROXORDERY" in md.names() else -1
             approxWeighting = md.get("APPROXWEIGHTING") if "APPROXWEIGHTING" in md.names() else True

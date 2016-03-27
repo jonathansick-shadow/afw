@@ -23,12 +23,14 @@ from __future__ import absolute_import, division
 from lsst.afw.geom import Box2D
 from .cameraGeomLib import FOCAL_PLANE
 
+
 class DetectorCollection(object):
     """!An immutable collection of Detectors that can be accessed by name or ID
     """
+
     def __init__(self, detectorList):
         """!Construct a DetectorCollection
-        
+
         @param[in] detectorList  a sequence of detectors in index order
         """
         self._idDetectorDict = dict((d.getId(), d) for d in detectorList)
@@ -81,7 +83,7 @@ class DetectorCollection(object):
         """!Get an iterator over detector IDs
         """
         return self._idDetectorDict.iterkeys()
-    
+
     def getFpBBox(self):
         """!Return a focal plane bounding box that encompasses all detectors
         """

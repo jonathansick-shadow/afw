@@ -1,7 +1,7 @@
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -9,14 +9,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 import lsst.pex.config as pexConfig
@@ -27,11 +27,12 @@ import mathLib
 
 __all__ = ["Warper", "WarperConfig"]
 
+
 def computeWarpedBBox(destWcs, srcBBox, srcWcs):
     """Compute the bounding box of a warped image
-    
+
     The bounding box includes all warped pixels and it may be a bit oversize.
-    
+
     @param destWcs: WCS of warped exposure
     @param srcBBox: parent bounding box of unwarped image
     @param srcWcs: WCS of unwarped image
@@ -49,6 +50,7 @@ def computeWarpedBBox(destWcs, srcBBox, srcWcs):
 
 _DefaultInterpLength = 10
 _DefaultCacheSize = 1000000
+
 
 class WarperConfig(pexConfig.Config):
     warpingKernelName = pexConfig.ChoiceField(
@@ -95,20 +97,22 @@ class WarperConfig(pexConfig.Config):
         default = afwImage.MaskU.getPlaneBitMask("EDGE"),
     )
 
+
 class Warper(object):
     """Warp images
     """
     ConfigClass = WarperConfig
+
     def __init__(self,
-        warpingKernelName,
-        interpLength = _DefaultInterpLength,
-        cacheSize = _DefaultCacheSize,
-        maskWarpingKernelName = "",
-        devicePreference = afwGpu.DEFAULT_DEVICE_PREFERENCE,
-        growFullMask = afwImage.MaskU.getPlaneBitMask("EDGE"),
-    ):
+                 warpingKernelName,
+                 interpLength = _DefaultInterpLength,
+                 cacheSize = _DefaultCacheSize,
+                 maskWarpingKernelName = "",
+                 devicePreference = afwGpu.DEFAULT_DEVICE_PREFERENCE,
+                 growFullMask = afwImage.MaskU.getPlaneBitMask("EDGE"),
+                 ):
         """Create a Warper
-        
+
         Inputs:
         - warpingKernelName: argument to lsst.afw.math.makeWarpingKernel
         - interpLength: interpLength argument to lsst.afw.warpExposure
@@ -122,7 +126,7 @@ class Warper(object):
     @classmethod
     def fromConfig(cls, config):
         """Create a Warper from a config
-        
+
         @param config: an instance of Warper.ConfigClass
         """
         return cls(
@@ -133,18 +137,18 @@ class Warper(object):
             devicePreference = config.devicePreference,
             growFullMask = config.growFullMask,
         )
-    
+
     def getWarpingKernel(self):
         """Get the warping kernel"""
         return self._warpingControl.getWarpingKernel()
-    
+
     def getMaskWarpingKernel(self):
         """Get the mask warping kernel"""
         return self._warpingControl.getMaskWarpingKernel()
 
     def warpExposure(self, destWcs, srcExposure, border=0, maxBBox=None, destBBox=None):
         """Warp an exposure
-        
+
         @param destWcs: WCS of warped exposure
         @param srcExposure: exposure to warp
         @param border: grow bbox of warped exposure by this amount in all directions (int pixels);
@@ -160,7 +164,7 @@ class Warper(object):
             otherwise border and maxBBox are ignored
 
         @return destExposure: warped exposure (of same type as srcExposure)
-        
+
         @note: calls mathLib.warpExposure insted of self.warpImage because the former
         copies attributes such as Calib, and that should be done in one place
         """
@@ -178,7 +182,7 @@ class Warper(object):
 
     def warpImage(self, destWcs, srcImage, srcWcs, border=0, maxBBox=None, destBBox=None):
         """Warp an image or masked image
-        
+
         @param destWcs: WCS of warped image
         @param srcImage: image or masked image to warp
         @param srcWcs: WCS of image
@@ -210,7 +214,7 @@ class Warper(object):
 
     def _computeDestBBox(self, destWcs, srcImage, srcWcs, border, maxBBox, destBBox):
         """Process destBBox argument for warpImage and warpExposure
-        
+
         @param destWcs: WCS of warped image
         @param srcImage: image or masked image to warp
         @param srcWcs: WCS of image
@@ -226,7 +230,7 @@ class Warper(object):
             if None then border and maxBBox are used to determine the bbox,
             otherwise border and maxBBox are ignored
         """
-        if destBBox is None: # warning: == None fails due to Box2I.__eq__
+        if destBBox is None:  # warning: == None fails due to Box2I.__eq__
             destBBox = computeWarpedBBox(destWcs, srcImage.getBBox(afwImage.PARENT), srcWcs)
             if border:
                 destBBox.grow(border)

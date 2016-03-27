@@ -21,13 +21,13 @@
 #
 
 ##
-## \file
-## \brief Support for talking to image displays from python
+# \file
+# \brief Support for talking to image displays from python
 
 import re
 import sys
 import importlib
-import lsst.afw.geom  as afwGeom
+import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
 
 __all__ = (
@@ -53,6 +53,7 @@ YELLOW = "yellow"
 ORANGE = "orange"
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
 def _makeDisplayImpl(display, backend, *args, **kwargs):
     """!Return the DisplayImpl for the named backend
@@ -84,6 +85,7 @@ def _makeDisplayImpl(display, backend, *args, **kwargs):
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+
 class Display(object):
     _displays = {}
     _defaultBackend = None
@@ -103,7 +105,7 @@ class Display(object):
         SAT=GREEN,
     )
     _defaultMaskTransparency = {}
-    
+
     def __init__(self, frame, backend=None, *args, **kwargs):
         """!Create an object able to display images and overplot glyphs
 
@@ -309,7 +311,7 @@ class Display(object):
         \c GREEN, \c CYAN, \c MAGENTA, \c YELLOW.
 
         The advantage of using the symbolic names is that the python interpreter can detect typos.
-        
+
         """
 
         if isinstance(name, dict):
@@ -322,7 +324,7 @@ class Display(object):
 
     def getMaskPlaneColor(self, name):
         """!Return the colour associated with the specified mask plane name"""
-        
+
         return self._maskPlaneColors.get(name)
 
     def setMaskTransparency(self, transparency=None, name=None):
@@ -364,35 +366,39 @@ class Display(object):
         else:
             self._xy0 = None
 
-        if re.search("::Exposure<", repr(data)): # it's an Exposure; display the MaskedImage with the WCS
+        if re.search("::Exposure<", repr(data)):  # it's an Exposure; display the MaskedImage with the WCS
             if wcs:
                 raise RuntimeError, "You may not specify a wcs with an Exposure"
             data, wcs = data.getMaskedImage(), data.getWcs()
-        elif re.search("::DecoratedImage<", repr(data)): # it's a DecoratedImage; display it
+        elif re.search("::DecoratedImage<", repr(data)):  # it's a DecoratedImage; display it
             data, wcs = data.getImage(), afwImage.makeWcs(data.getMetadata())
             self._xy0 = data.getXY0()   # DecoratedImage doesn't have getXY0()
 
-        if re.search("::Image<", repr(data)): # it's an Image; display it
+        if re.search("::Image<", repr(data)):  # it's an Image; display it
             self._impl._mtv(data, None, wcs, title)
-        elif re.search("::Mask<", repr(data)): # it's a Mask; display it, bitplane by bitplane
+        elif re.search("::Mask<", repr(data)):  # it's a Mask; display it, bitplane by bitplane
             #
             # Some displays can't display a Mask without an image; so display an Image too,
             # with pixel values set to the mask
             #
             self._impl._mtv(afwImage.ImageU(data.getArray()), data, wcs, title)
-        elif re.search("::MaskedImage<", repr(data)): # it's a MaskedImage; display Image and overlay Mask
+        elif re.search("::MaskedImage<", repr(data)):  # it's a MaskedImage; display Image and overlay Mask
             self._impl._mtv(data.getImage(), data.getMask(True), wcs, title)
         else:
             raise RuntimeError, "Unsupported type %s" % repr(data)
     #
     # Graphics commands
     #
+
     class _Buffering(object):
         """A class intended to be used with python's with statement"""
+
         def __init__(self, _impl):
             self._impl = _impl
+
         def __enter__(self):
             self._impl._buffer(True)
+
         def __exit__(self, *args):
             self._impl._buffer(False)
             self._impl._flush()
@@ -480,6 +486,7 @@ class Display(object):
     #
     # Set gray scale
     #
+
     def scale(self, algorithm, min, max=None, unit=None, *args, **kwargs):
         """!Set the range of the scaling from DN in the image to the image display
         \param algorithm Desired scaling (e.g. "linear" or "asinh")
@@ -488,7 +495,7 @@ class Display(object):
         \param unit Units for min and max (e.g. Percent, Absolute, Sigma; None if min==minmax|zscale)
         \param *args Optional arguments
         \param **kwargs Optional keyword arguments
-        """    
+        """
         if min in ("minmax", "zscale"):
             assert max == None, "You may not specify \"%s\" and max" % min
             assert unit == None, "You may not specify \"%s\" and unit" % min
@@ -499,6 +506,7 @@ class Display(object):
     #
     # Zoom and Pan
     #
+
     def zoom(self, zoomfac=None, colc=None, rowc=None, origin=afwImage.PARENT):
         """!Zoom frame by specified amount, optionally panning also"""
 
@@ -574,8 +582,11 @@ class Display(object):
 #
 # Callbacks for display events
 #
+
+
 class Event(object):
     """!A class to handle events such as key presses in image display windows"""
+
     def __init__(self, k, x=float('nan'), y=float('nan')):
         self.k = k
         self.x = x
@@ -586,9 +597,12 @@ class Event(object):
 #
 # Default fallback function
 #
+
+
 def noop_callback(k, x, y):
     """!Callback function: arguments key, x, y"""
     return False
+
 
 def h_callback(k, x, y):
     print "Enter q or <ESC> to leave interactive mode, h for this help, or a letter to fire a callback"
@@ -599,26 +613,34 @@ def h_callback(k, x, y):
 # Handle Displays, including the default one (the frame to use when a user specifies None)
 #
 # If the default frame is None, image display is disabled
-# 
+#
+
+
 def setDefaultBackend(backend):
     Display.setDefaultBackend(backend)
+
 
 def getDefaultBackend():
     return Display.getDefaultBackend()
 
+
 def setDefaultFrame(frame=0):
     return Display.setDefaultFrame(frame)
+
 
 def getDefaultFrame():
     """Get the default frame for display"""
     return Display.getDefaultFrame()
 
+
 def incrDefaultFrame():
     """Increment the default frame for display"""
     return Display.incrDefaultFrame()
 
+
 def setDefaultMaskTransparency(maskPlaneTransparency={}):
     return Display.setDefaultMaskTransparency(maskPlaneTransparency)
+
 
 def setDefaultMaskPlaneColor(name=None, color=None):
     """!Set the default mapping from mask plane names to colours
@@ -629,6 +651,7 @@ def setDefaultMaskPlaneColor(name=None, color=None):
     """
 
     return Display.setDefaultMaskPlaneColor(name, color)
+
 
 def getDisplay(frame=None, backend=None, create=True, verbose=False, *args, **kwargs):
     """!Return the Display indexed by frame, creating it if needs be
@@ -645,6 +668,7 @@ def getDisplay(frame=None, backend=None, create=True, verbose=False, *args, **kw
     """
 
     return Display.getDisplay(frame, backend, create, verbose, *args, **kwargs)
+
 
 def delAllDisplays():
     """!Delete and close all known display

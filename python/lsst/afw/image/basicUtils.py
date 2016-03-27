@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -10,14 +10,14 @@ from __future__ import absolute_import, division
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -33,25 +33,30 @@ import lsst.afw.geom as afwGeom
 from . import imageLib
 
 __all__ = ["makeImageFromArray", "makeMaskFromArray", "makeMaskedImageFromArrays",
-    "wcsNearlyEqualOverBBox", "assertWcsNearlyEqualOverBBox"]
+           "wcsNearlyEqualOverBBox", "assertWcsNearlyEqualOverBBox"]
 
 suffixes = {str(numpy.uint16): "U", str(numpy.int32): "I", str(numpy.float32): "F", str(numpy.float64): "D"}
+
 
 def makeImageFromArray(array):
     """Construct an Image from a NumPy array, inferring the Image type from the NumPy type.
     Return None if input is None.
     """
-    if array is None: return None
+    if array is None:
+        return None
     cls = getattr(imageLib, "Image%s" % (suffixes[str(array.dtype.type)],))
     return cls(array)
+
 
 def makeMaskFromArray(array):
     """Construct an Mask from a NumPy array, inferring the Mask type from the NumPy type.
     Return None if input is None.
     """
-    if array is None: return None
+    if array is None:
+        return None
     cls = getattr(imageLib, "Mask%s" % (suffixes[str(array.dtype.type)],))
     return cls(array)
+
 
 def makeMaskedImageFromArrays(image, mask=None, variance=None):
     """Construct a MaskedImage from three NumPy arrays, inferring the MaskedImage types from the NumPy types.
@@ -59,8 +64,9 @@ def makeMaskedImageFromArrays(image, mask=None, variance=None):
     cls = getattr(imageLib, "MaskedImage%s" % (suffixes[str(image.dtype.type)],))
     return cls(makeImageFromArray(image), makeMaskFromArray(mask), makeImageFromArray(variance))
 
+
 def _compareWcsOverBBox(wcs0, wcs1, bbox, maxDiffSky=0.01*afwGeom.arcseconds,
-    maxDiffPix=0.01, nx=5, ny=5, doShortCircuit=True):
+                        maxDiffPix=0.01, nx=5, ny=5, doShortCircuit=True):
     """!Compare two WCS over a rectangular grid of pixel positions
 
     @param[in] wcs0  WCS 0 (an lsst.afw.image.Wcs)
@@ -90,8 +96,8 @@ def _compareWcsOverBBox(wcs0, wcs1, bbox, maxDiffSky=0.01*afwGeom.arcseconds,
     xList = numpy.linspace(bboxd.getMinX(), bboxd.getMaxX(), nx)
     yList = numpy.linspace(bboxd.getMinY(), bboxd.getMaxY(), ny)
     # we don't care about measured error unless it is too large, so initialize to max allowed
-    measDiffSky = (maxDiffSky, "?") # (sky diff, pix pos)
-    measDiffPix = (maxDiffPix, "?") # (pix diff, sky pos)
+    measDiffSky = (maxDiffSky, "?")  # (sky diff, pix pos)
+    measDiffPix = (maxDiffPix, "?")  # (pix diff, sky pos)
     for x, y in itertools.product(xList, yList):
         fromPixPos = afwGeom.Point2D(x, y)
         sky0 = wcs0.pixelToSky(fromPixPos)
@@ -113,15 +119,16 @@ def _compareWcsOverBBox(wcs0, wcs1, bbox, maxDiffSky=0.01*afwGeom.arcseconds,
     msgList = []
     if measDiffSky[0] > maxDiffSky:
         msgList.append("%s arcsec max measured sky error > %s arcsec max allowed sky error at pix pos=%s" %
-            (measDiffSky[0].asArcseconds(), maxDiffSky.asArcseconds(), measDiffSky[1]))
+                       (measDiffSky[0].asArcseconds(), maxDiffSky.asArcseconds(), measDiffSky[1]))
     if measDiffPix[0] > maxDiffPix:
         msgList.append("%s max measured pix error > %s max allowed pix error at sky pos=%s" %
-                (measDiffPix[0], maxDiffPix, measDiffPix[1]))
+                       (measDiffPix[0], maxDiffPix, measDiffPix[1]))
 
     return "; ".join(msgList)
 
+
 def wcsNearlyEqualOverBBox(wcs0, wcs1, bbox, maxDiffSky=0.01*afwGeom.arcseconds,
-    maxDiffPix=0.01, nx=5, ny=5):
+                           maxDiffPix=0.01, nx=5, ny=5):
     """!Return True if two WCS are nearly equal over a grid of pixel positions, else False
 
     @param[in] wcs0  WCS 0 (an lsst.afw.image.Wcs)
@@ -144,9 +151,10 @@ def wcsNearlyEqualOverBBox(wcs0, wcs1, bbox, maxDiffSky=0.01*afwGeom.arcseconds,
         doShortCircuit = True,
     ))
 
+
 @lsst.utils.tests.inTestCase
 def assertWcsNearlyEqualOverBBox(testCase, wcs0, wcs1, bbox, maxDiffSky=0.01*afwGeom.arcseconds, maxDiffPix=0.01,
-    nx=5, ny=5, msg="WCSs differ"):
+                                 nx=5, ny=5, msg="WCSs differ"):
     """!Compare pixelToSky and skyToPixel for two WCS over a rectangular grid of pixel positions
 
     If the WCS are too divergent, call testCase.fail; the message describes the largest error measured

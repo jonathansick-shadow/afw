@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Show the layout of CCDs in a camera.',
                                      epilog=
-                        'The corresponding obs-package must be setup (e.g. obs_decam if you want to see DECam)'
+                                     'The corresponding obs-package must be setup (e.g. obs_decam if you want to see DECam)'
                                      )
     parser.add_argument('mapper', help="Name of camera (e.g. decam)", default=None)
     parser.add_argument('--outputFile', type=str, help="File to write plot to", default=None)
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     #
     # Import the obs package and lookup the mapper
     #
-    obsPackageName = "lsst.obs.%s" % args.mapper # guess the package
+    obsPackageName = "lsst.obs.%s" % args.mapper  # guess the package
 
     try:
         __import__(obsPackageName)
@@ -51,9 +51,9 @@ if __name__ == '__main__':
         print >> sys.stderr, "Unable to import %s -- is it setup?" % (obsPackageName,)
         sys.exit(1)
 
-    obsPackage = sys.modules[obsPackageName] # __import__ returns the top-level module, so look ours up
+    obsPackage = sys.modules[obsPackageName]  # __import__ returns the top-level module, so look ours up
 
-    mapperName = "%s%sMapper" % (args.mapper[0].title(), args.mapper[1:]) # guess the name too
+    mapperName = "%s%sMapper" % (args.mapper[0].title(), args.mapper[1:])  # guess the name too
     try:
         mapper = getattr(obsPackage, mapperName)
     except AttributeError:
@@ -76,6 +76,7 @@ if __name__ == '__main__':
                                    showFig=not args.outputFile, savePath=args.outputFile)
 
     if not args.outputFile:
-        print "Hit any key to exit",; raw_input()
+        print "Hit any key to exit",
+        raw_input()
 
     sys.exit(0)

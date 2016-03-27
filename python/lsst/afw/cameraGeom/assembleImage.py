@@ -1,23 +1,23 @@
 from __future__ import absolute_import, division
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 import itertools
@@ -26,9 +26,10 @@ __ALL__ = ['assembleAmplifierImage', 'assembleAmplifierRawImage']
 
 # dict of doFlip: slice
 _SliceDict = {
-    False: slice(None,None,1),
-    True:  slice(None,None,-1),
+    False: slice(None, None, 1),
+    True: slice(None, None, -1),
 }
+
 
 def _insertPixelChunk(outView, inView, amplifier, hasArrays):
     # For the sake of simplicity and robustness, this code does not short-circuit the case flipX=flipY=False.
@@ -46,7 +47,8 @@ def _insertPixelChunk(outView, inView, amplifier, hasArrays):
         outArrList = [outView.getArray()]
 
     for inArr, outArr in itertools.izip(inArrList, outArrList):
-        outArr[:] = inArr[ySlice, xSlice] # y,x because numpy arrays are transposed w.r.t. afw Images
+        outArr[:] = inArr[ySlice, xSlice]  # y,x because numpy arrays are transposed w.r.t. afw Images
+
 
 def assembleAmplifierImage(destImage, rawImage, amplifier):
     """!Assemble the amplifier region of an image from a raw image
@@ -63,12 +65,13 @@ def assembleAmplifierImage(destImage, rawImage, amplifier):
     if not amplifier.getHasRawInfo():
         raise RuntimeError("amplifier must contain raw amplifier info")
     if type(destImage.Factory) != type(rawImage.Factory):
-        raise RuntimeError("destImage type = %s != %s = rawImage type" % \
-            type(destImage.Factory).__name__, type(rawImage.Factory).__name__)
+        raise RuntimeError("destImage type = %s != %s = rawImage type" %
+                           type(destImage.Factory).__name__, type(rawImage.Factory).__name__)
     inView = rawImage.Factory(rawImage, amplifier.getRawDataBBox(), False)
     outView = destImage.Factory(destImage, amplifier.getBBox(), False)
 
     _insertPixelChunk(outView, inView, amplifier, hasattr(rawImage, "getArrays"))
+
 
 def assembleAmplifierRawImage(destImage, rawImage, amplifier):
     """!Assemble the amplifier region of a raw CCD image
@@ -88,8 +91,8 @@ def assembleAmplifierRawImage(destImage, rawImage, amplifier):
     if not amplifier.getHasRawInfo():
         raise RuntimeError("amplifier must contain raw amplifier info")
     if type(destImage.Factory) != type(rawImage.Factory):
-        raise RuntimeError("destImage type = %s != %s = rawImage type" % \
-            type(destImage.Factory).__name__, type(rawImage.Factory).__name__)
+        raise RuntimeError("destImage type = %s != %s = rawImage type" %
+                           type(destImage.Factory).__name__, type(rawImage.Factory).__name__)
     inBBox = amplifier.getRawBBox()
     inView = rawImage.Factory(rawImage, inBBox, False)
     outBBox = amplifier.getRawBBox()

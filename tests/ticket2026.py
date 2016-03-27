@@ -7,12 +7,15 @@ import lsst.utils.tests
 import lsst.afw.table as afwTable
 
 # Subtract 1 so that ids == indices
+
+
 def getids(c):
     return [s.getId()-1 for s in c]
+
+
 def printids(c):
     print getids(c)
 
-            
 
 class IndexingCatalogTestCase(unittest.TestCase):
 
@@ -86,7 +89,7 @@ class IndexingCatalogTestCase(unittest.TestCase):
         print 'Negative step (6:1:-2)'
         self.assertSlice(catalog, 6, 1, -2)
         print 'Negative step (6:0:-2)'
-        self.assertSlice(catalog, 6, 0 ,-2)
+        self.assertSlice(catalog, 6, 0, -2)
         print 'Negative step (-1:-12:-2)'
         self.assertSlice(catalog, -1, -12, -2)
         print 'Negative step (6:0:-1)'
@@ -100,6 +103,7 @@ class IndexingCatalogTestCase(unittest.TestCase):
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+
 def suite():
     """Returns a suite containing all the test cases in this module."""
 
@@ -110,6 +114,7 @@ def suite():
     suites += unittest.makeSuite(lsst.utils.tests.MemoryTestCase)
     return unittest.TestSuite(suites)
 
+
 def run(shouldExit = False):
     """Run the tests"""
     lsst.utils.tests.run(suite(), shouldExit)
@@ -117,5 +122,5 @@ def run(shouldExit = False):
 if __name__ == "__main__":
     run(True)
 
-        
-        
+
+

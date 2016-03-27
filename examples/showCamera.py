@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 import lsst.afw.cameraGeom as cameraGeom
 import lsst.afw.geom as afwGeom
 
+
 def main(camera, sample=20, showDistortion=True):
     if True:
         fig = plt.figure(1)
@@ -54,11 +55,11 @@ def main(camera, sample=20, showDistortion=True):
 
             ccd = cameraGeom.cast_Ccd(ccd)
             ccd.setTrimmed(True)
-            
+
             width, height = ccd.getAllPixels(True).getDimensions()
 
-            corners = ((0.0,0.0), (0.0, height), (width, height), (width, 0.0), (0.0, 0.0))
-            for (x0, y0), (x1, y1) in zip(corners[0:4],corners[1:5]):
+            corners = ((0.0, 0.0), (0.0, height), (width, height), (width, 0.0), (0.0, 0.0))
+            for (x0, y0), (x1, y1) in zip(corners[0:4], corners[1:5]):
                 if x0 == x1 and y0 != y1:
                     yList = numpy.linspace(y0, y1, num=sample)
                     xList = [x0] * len(yList)
@@ -68,10 +69,12 @@ def main(camera, sample=20, showDistortion=True):
                 else:
                     raise RuntimeError("Should never get here")
 
-                xOriginal = []; yOriginal = []
-                xDistort = []; yDistort = []
+                xOriginal = []
+                yOriginal = []
+                xDistort = []
+                yDistort = []
                 for x, y in zip(xList, yList):
-                    position = ccd.getPositionFromPixel(afwGeom.Point2D(x,y)) # focal plane position
+                    position = ccd.getPositionFromPixel(afwGeom.Point2D(x, y))  # focal plane position
 
                     xOriginal.append(position.getMm().getX())
                     yOriginal.append(position.getMm().getY())
@@ -81,10 +84,10 @@ def main(camera, sample=20, showDistortion=True):
 
                     # Calculate offset (in CCD pixels) due to distortion
                     distortion = dist.distort(afwGeom.Point2D(x, y), ccd) - afwGeom.Extent2D(x, y)
-                    
+
                     # Calculate the distorted position
                     distorted = position + cameraGeom.FpPoint(distortion)*ccd.getPixelSize()
-                    
+
                     xDistort.append(distorted.getMm().getX())
                     yDistort.append(distorted.getMm().getY())
 
@@ -94,7 +97,7 @@ def main(camera, sample=20, showDistortion=True):
                         ax.plot(xDistort, yDistort, 'r-')
 
             if fig:
-                x,y = ccd.getPositionFromPixel(afwGeom.Point2D(width/2, height/2)).getMm()
+                x, y = ccd.getPositionFromPixel(afwGeom.Point2D(width/2, height/2)).getMm()
                 ax.text(x, y, ccd.getId().getSerial(), ha='center')
 
     if fig:
@@ -103,7 +106,7 @@ def main(camera, sample=20, showDistortion=True):
 if __name__ == '__main__':
     import argparse
     import sys
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument("camera", help="Name of camera to show")
     parser.add_argument("--showDistortion", action="store_true", help="Show distortion?")
@@ -119,8 +122,9 @@ if __name__ == '__main__':
     else:
         print >> sys.stderr, "Unknown camera %s" % args.camera
         sys.exit(1)
-    
+
     camera = Mapper().camera
 
     main(camera, showDistortion=args.showDistortion, sample=2)
-    print "Hit any key to exit",; raw_input()
+    print "Hit any key to exit",
+    raw_input()

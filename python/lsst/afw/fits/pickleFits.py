@@ -1,5 +1,6 @@
 from lsst.afw.fits.fitsLib import MemFileManager, cdata, memmove
 
+
 def reduceToFits(obj):
     """Pickle to FITS
 
@@ -10,8 +11,9 @@ def reduceToFits(obj):
     manager = MemFileManager()
     obj.writeFits(manager)
     size = manager.getLength()
-    data = cdata(manager.getData(), size);
+    data = cdata(manager.getData(), size)
     return (unreduceFromFits, (obj.__class__, data, size))
+
 
 def unreduceFromFits(cls, data, size):
     """Unpickle from FITS
@@ -20,6 +22,6 @@ def unreduceFromFits(cls, data, size):
 
     Assumes the existence of a "readFits" method on the object.
     """
-    manager = MemFileManager(size + 1) # Allow an extra char for nul
+    manager = MemFileManager(size + 1)  # Allow an extra char for nul
     memmove(manager.getData(), data)
     return cls.readFits(manager)

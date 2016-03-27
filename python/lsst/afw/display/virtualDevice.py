@@ -21,10 +21,12 @@
 #
 
 ##
-## \file
-## \brief A dummy image display
+# \file
+# \brief A dummy image display
+
 
 class DisplayImpl(object):
+
     def __init__(self, display, verbose=False):
         """! Initialise the display
         \param display The display object that we're providing the implementation for
@@ -132,11 +134,11 @@ class DisplayImpl(object):
         """
         if self.verbose:
             print "virtual[%s]._scale(%s, %s, %s, %s, %s, %s)" % (self.display.frame, algorithm,
-                                                                 min, max, unit, args, kwargs)
+                                                                  min, max, unit, args, kwargs)
 
     def _show(self):
         """Show the requested display
-        """    
+        """
         if self.verbose:
             print "virtual[%s]._show()" % self.display.frame
 
@@ -144,13 +146,13 @@ class DisplayImpl(object):
         """Pan to (colc, rowc)
         \param c Desired column (x) position
         \param r Desired row (y) position
-        """    
+        """
         if self.verbose:
             print "virtual[%s]._pan(%.2f, %.2f)" % (self.display.frame, r, c)
 
     def _zoom(self, zoomfac):
         """Set the zoom
         \param zoomfac  Zoom factor to use
-        """    
+        """
         if self.verbose:
             print "virtual[%s]._zoom(%g)" % (self.display.frame, zoomfac)

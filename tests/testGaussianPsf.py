@@ -49,6 +49,7 @@ try:
 except NameError:
     display = False
 
+
 def makeGaussianImage(bbox, sigma, xc=0.0, yc=0.0):
     image = lsst.afw.image.ImageD(bbox)
     array = image.getArray()
@@ -57,6 +58,7 @@ def makeGaussianImage(bbox, sigma, xc=0.0, yc=0.0):
             array[yi, xi] = numpy.exp(-0.5*((xv - xc)**2 + (yv - yc)**2)/sigma**2)
     array /= array.sum()
     return image
+
 
 def computeNaiveApertureFlux(image, radius, xc=0.0, yc=0.0):
     bbox = image.getBBox()
@@ -67,6 +69,7 @@ def computeNaiveApertureFlux(image, radius, xc=0.0, yc=0.0):
             if (xv - xc)**2 + (yv - yc)**2 < radius**2:
                 s += array[yi, xi]
     return s
+
 
 class GaussianPsfTestCase(lsst.utils.tests.TestCase):
 
@@ -105,6 +108,7 @@ class GaussianPsfTestCase(lsst.utils.tests.TestCase):
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+
 def suite():
     """Returns a suite containing all the test cases in this module."""
 
@@ -114,6 +118,7 @@ def suite():
     suites += unittest.makeSuite(GaussianPsfTestCase)
     suites += unittest.makeSuite(lsst.utils.tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit = False):
     """Run the tests"""

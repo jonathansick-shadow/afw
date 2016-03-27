@@ -1,10 +1,10 @@
 #!/usr/bin/env python2
 from __future__ import absolute_import, division
 
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@ from __future__ import absolute_import, division
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -43,8 +43,10 @@ except NameError:
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+
 class CameraGeomTestCase(unittest.TestCase):
     """A test case for camera geometry"""
+
     def setUp(self):
         self.lsstCamWrapper = testUtils.CameraWrapper(isLsstLike=True)
         self.scCamWrapper = testUtils.CameraWrapper(isLsstLike=False)
@@ -71,9 +73,9 @@ class CameraGeomTestCase(unittest.TestCase):
             for det in cw.camera:
                 self.assertTrue(isinstance(det, Detector))
                 self.assertEqual(cw.ampInfoDict[det.getName()]['namps'], len(det))
-            
+
     def testMakeCameraPoint(self):
-        point = afwGeom.Point2D(0,0)
+        point = afwGeom.Point2D(0, 0)
         for cw in self.cameraList:
             camera = cw.camera
             for coordSys in (PUPIL, FOCAL_PLANE):
@@ -97,9 +99,9 @@ class CameraGeomTestCase(unittest.TestCase):
             self.checkCamPoint(cp, point, FOCAL_PLANE)
             cp = camera.makeCameraPoint(point, det.makeCameraSys(PIXELS))
             self.checkCamPoint(cp, point, det.makeCameraSys(PIXELS))
-            #non-existant camera sys in makeCameraPoint
+            # non-existant camera sys in makeCameraPoint
             self.assertRaises(RuntimeError, camera.makeCameraPoint, point, CameraSys('abcd'))
-            #CameraSysPrefix camera sys in makeCameraPoint
+            # CameraSysPrefix camera sys in makeCameraPoint
             self.assertRaises(TypeError, camera.makeCameraPoint, point, PIXELS)
 
     def testCameraSysRepr(self):
@@ -160,7 +162,7 @@ class CameraGeomTestCase(unittest.TestCase):
                     (1.24000000, -1.68000000, 223.47420612, -302.77150507),
                     (1.40000000, 1.40000000, 252.27834478, 252.27834478),
                     (1.60000000, 0.48000000, 288.22644118, 86.46793236),
-                    (1.80000000, -0.44000000, 324.31346653, -79.27662515),]
+                    (1.80000000, -0.44000000, 324.31346653, -79.27662515), ]
 
         for cw in self.cameraList:
             camera = cw.camera
@@ -220,10 +222,10 @@ class CameraGeomTestCase(unittest.TestCase):
         for cw in self.cameraList:
             detPointsList = []
             for det in cw.camera:
-                #This currently assumes there is only one detector at the center
-                #position of any detector.  That is not enforced and multiple detectors
-                #at a given PUPIL position is supported.  Change this if the default
-                #camera changes.
+                # This currently assumes there is only one detector at the center
+                # position of any detector.  That is not enforced and multiple detectors
+                # at a given PUPIL position is supported.  Change this if the default
+                # camera changes.
                 #cp = cw.camera.makeCameraPoint(det.getCenter(), PUPIL)
                 cp = det.getCenter(FOCAL_PLANE)
                 detPointsList.append(cp.getPoint())
@@ -266,7 +268,8 @@ class CameraGeomTestCase(unittest.TestCase):
 
     def testAssembly(self):
         ccdNames = ('R:0,0 S:1,0', 'R:0,0 S:0,1')
-        compMap = {True:afwImage.ImageU('tests/test_comp_trimmed.fits.gz'), False:afwImage.ImageU('tests/test_comp.fits.gz')}
+        compMap = {True: afwImage.ImageU('tests/test_comp_trimmed.fits.gz'),
+                   False: afwImage.ImageU('tests/test_comp.fits.gz')}
         for cw in self.cameraList:
             camera = cw.camera
             imList = self.assemblyList[camera.getName()]
@@ -310,11 +313,11 @@ class CameraGeomTestCase(unittest.TestCase):
     def testCameraRaises(self):
         for cw in self.cameraList:
             camera = cw.camera
-            cp = camera.makeCameraPoint(afwGeom.Point2D(1e6,1e6), FOCAL_PLANE)
-            #Way off the focal plane
+            cp = camera.makeCameraPoint(afwGeom.Point2D(1e6, 1e6), FOCAL_PLANE)
+            # Way off the focal plane
             self.assertRaises(RuntimeError, camera.transform, cp, PIXELS)
-            #non-existant destination camera system
-            cp = camera.makeCameraPoint(afwGeom.Point2D(0,0), FOCAL_PLANE)
+            # non-existant destination camera system
+            cp = camera.makeCameraPoint(afwGeom.Point2D(0, 0), FOCAL_PLANE)
             self.assertRaises(RuntimeError, camera.transform, cp, CameraSys('abcd'))
 
     def checkCamPoint(self, cp, testPt, testSys):
@@ -330,6 +333,7 @@ class CameraGeomTestCase(unittest.TestCase):
             self.assertAlmostEquals(cp1.getPoint()[i], cp2.getPoint()[i], 6)
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
 def suite():
     """Returns a suite containing all the test cases in this module."""
@@ -347,6 +351,7 @@ def suite():
         ds9.cmdBuffer.popSize()
 
     return unittest.TestSuite(suites)
+
 
 def run(exit=False):
     """Run the tests"""

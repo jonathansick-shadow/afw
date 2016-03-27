@@ -1,10 +1,10 @@
 #!/usr/bin/env python2
 from __future__ import absolute_import, division
 
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@ from __future__ import absolute_import, division
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -46,8 +46,10 @@ except NameError:
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+
 class SplineTestCase(unittest.TestCase):
     """A test case for Image"""
+
     def smooth(self, x, differentiate=False):
         if differentiate:
             return math.cos(x)
@@ -65,11 +67,11 @@ class SplineTestCase(unittest.TestCase):
 
     def setUp(self):
         x, x2, ySin, yND = [], [], [], []
-        for i in range(0,40):
+        for i in range(0, 40):
             x.append(0.1*i)
             for j in range(4):
                 x2.append(0.1*(i + 0.25*j))
-                
+
             ySin.append(self.smooth(x[i]))
             yND.append(self.noDerivative(x[i]))
 
@@ -93,7 +95,7 @@ class SplineTestCase(unittest.TestCase):
         sp.interpolate(self.x2, y2)
 
         for x, y in zip(self.x2, y2):
-            self.assertAlmostEqual(y, self.smooth(x), 1) # fails at 2 places!
+            self.assertAlmostEqual(y, self.smooth(x), 1)  # fails at 2 places!
 
     def testNaturalSplineDerivative1(self):
         """Test fitting a natural spline to a smooth function and finding its derivative"""
@@ -114,7 +116,7 @@ class SplineTestCase(unittest.TestCase):
         sp.interpolate(self.x2, y2)
 
         for x, y in zip(self.x2, y2):
-            self.assertAlmostEqual(y, self.noDerivative(x), 1) # fails at 2 places!
+            self.assertAlmostEqual(y, self.noDerivative(x), 1)  # fails at 2 places!
 
     def testTautSpline1(self):
         """Test fitting a taut spline to a smooth function"""
@@ -162,6 +164,7 @@ class SplineTestCase(unittest.TestCase):
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+
 def suite():
     """Returns a suite containing all the test cases in this module."""
 
@@ -171,6 +174,7 @@ def suite():
     suites += unittest.makeSuite(SplineTestCase)
     suites += unittest.makeSuite(utilsTests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit=False):
     """Run the tests"""

@@ -32,6 +32,7 @@ import re
 import numpy
 import collections
 
+
 def Schema_extract(self, *patterns, **kwds):
     """
     Extract a dictionary of {<name>: <schema-item>} in which the field names
@@ -77,12 +78,13 @@ def Schema_extract(self, *patterns, **kwds):
                     if sub is not None:
                         name = m.expand(sub)
                     d[name] = item
-                    continue # continue middle loop so we don't match the same name twice
+                    continue  # continue middle loop so we don't match the same name twice
             for pattern in patterns:
                 if fnmatch.fnmatchcase(name, pattern):
                     d[name] = item
-                    break # break inner loop so we don't match the same name twice
+                    break  # break inner loop so we don't match the same name twice
     return d
+
 
 def BaseRecord_extract(self, *patterns, **kwds):
     """
@@ -132,6 +134,7 @@ def BaseRecord_extract(self, *patterns, **kwds):
         else:
             d[name] = self.get(schemaItem.key)
     return d
+
 
 def BaseColumnView_extract(self, *patterns, **kwds):
     """
@@ -189,13 +192,14 @@ def BaseColumnView_extract(self, *patterns, **kwds):
         d = self.schema.extract(*patterns, **kwds).copy()
     elif kwds:
         raise ValueError("Unrecognized keyword arguments for extract: %s" % ", ".join(kwds.keys()))
+
     def processArray(a):
         if where is not None:
             a = a[where]
         if copy:
             a = numpy.ascontiguousarray(a)
         return a
-    for name, schemaItem in d.items(): # can't use iteritems because we might be adding/deleting elements
+    for name, schemaItem in d.items():  # can't use iteritems because we might be adding/deleting elements
         key = schemaItem.key
         if key.getTypeString() == "String":
             del d[name]

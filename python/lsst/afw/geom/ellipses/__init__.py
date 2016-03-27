@@ -1,7 +1,7 @@
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -9,14 +9,14 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -27,18 +27,19 @@ import weakref
 import numpy
 
 Separable = {
-    (Distortion, DeterminantRadius):SeparableDistortionDeterminantRadius,
-    (Distortion, TraceRadius):SeparableDistortionTraceRadius,
-    (Distortion, LogDeterminantRadius):SeparableDistortionLogDeterminantRadius,
-    (Distortion, LogTraceRadius):SeparableDistortionLogTraceRadius,
-    (ConformalShear, DeterminantRadius):SeparableConformalShearDeterminantRadius,
-    (ConformalShear, TraceRadius):SeparableConformalShearTraceRadius,
-    (ConformalShear, LogDeterminantRadius):SeparableConformalShearLogDeterminantRadius,
-    (ConformalShear, LogTraceRadius):SeparableConformalShearLogTraceRadius
+    (Distortion, DeterminantRadius): SeparableDistortionDeterminantRadius,
+    (Distortion, TraceRadius): SeparableDistortionTraceRadius,
+    (Distortion, LogDeterminantRadius): SeparableDistortionLogDeterminantRadius,
+    (Distortion, LogTraceRadius): SeparableDistortionLogTraceRadius,
+    (ConformalShear, DeterminantRadius): SeparableConformalShearDeterminantRadius,
+    (ConformalShear, TraceRadius): SeparableConformalShearTraceRadius,
+    (ConformalShear, LogDeterminantRadius): SeparableConformalShearLogDeterminantRadius,
+    (ConformalShear, LogTraceRadius): SeparableConformalShearLogTraceRadius
 }
 
 BaseCore.cast = lambda self: globals()[self.getName()].cast(self)
-    
+
+
 class EllipseMatplotlibInterface(object):
     """An interface for drawing the ellipse using matplotlib.
 
@@ -57,7 +58,7 @@ class EllipseMatplotlibInterface(object):
             (self.__ellipse.getCenter().getX(), self.__ellipse.getCenter().getY()),
             core.getA(), core.getB(), core.getTheta() * 180.0 / numpy.pi,
             **kwds
-            )
+        )
 
     def __getattr__(self, name):
         return getattr(self.patch, name)
@@ -71,7 +72,7 @@ class EllipseMatplotlibInterface(object):
         new_patch = matplotlib.patches.Ellipse(
             (self.__ellipse.getCenter().getX(), self.__ellipse.getCenter().getY()),
             core.a, core.b, core.theta * 180.0 / numpy.pi
-            )
+        )
         new_patch.update_from(self.patch)
         axes = self.patch.get_axes()
         if axes is not None:
@@ -79,8 +80,11 @@ class EllipseMatplotlibInterface(object):
             axes.add_patch(new_patch)
         self.patch = new_patch
         if axes is not None:
-            if rescale: axes.autoscale_view()
-            if show: axes.figure.canvas.draw()
+            if rescale:
+                axes.autoscale_view()
+            if show:
+                axes.figure.canvas.draw()
+
 
 def Ellipse_plot(self, axes=None, scale=1.0, show=True, rescale=True, **kwds):
     """Plot the ellipse in matplotlib, adding a MatplotlibInterface
@@ -103,8 +107,10 @@ def Ellipse_plot(self, axes=None, scale=1.0, show=True, rescale=True, **kwds):
     if axes is None:
         axes = matplotlib.pyplot.gca()
     axes.add_patch(self.matplotlib.patch)
-    if rescale: axes.autoscale_view()
-    if show: axes.figure.canvas.draw()
+    if rescale:
+        axes.autoscale_view()
+    if show:
+        axes.figure.canvas.draw()
     return self.matplotlib.patch
 
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python2
 from __future__ import absolute_import, division
 
-# 
+#
 # LSST Data Management System
 # Copyright 2008, 2009, 2010 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -12,14 +12,14 @@ from __future__ import absolute_import, division
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 
@@ -32,8 +32,8 @@ import lsst.utils.tests as utilsTests
 import lsst.afw.math as afwMath
 import lsst.afw.image as afwImage
 
+
 class weightedStatsBugTestCase(unittest.TestCase):
-    
 
     def reportBadPixels(self, maskedImage, badPixelMask):
         """Report the number of bad pixels in each plane of a masked image
@@ -52,12 +52,11 @@ class weightedStatsBugTestCase(unittest.TestCase):
         self.assertEqual(nBadMsk, 0)
         self.assertEqual(nBadVar, 0)
 
-
     def testWeightedStats(self):
         """Test that bug from #1697 (weighted stats returning NaN) stays fixed."""
-        
+
         rand = afwMath.Random()
-        mu   = 10000
+        mu = 10000
 
         afwImage.MaskU.getPlaneBitMask("EDGE")
 
@@ -69,7 +68,7 @@ class weightedStatsBugTestCase(unittest.TestCase):
 
         for weight in (300.0, 10.0, 1.0):
             print "Testing with weight=%0.1f" % (weight,)
-            maskedImageList = afwImage.vectorMaskedImageF() # [] is rejected by afwMath.statisticsStack
+            maskedImageList = afwImage.vectorMaskedImageF()  # [] is rejected by afwMath.statisticsStack
             weightList = []
 
             nx, ny = 256, 256
@@ -81,7 +80,7 @@ class weightedStatsBugTestCase(unittest.TestCase):
                 afwMath.randomPoissonImage(maskedImage.getImage(), rand, mu)
                 maskedImage.getVariance().set(mu)
                 weightList.append(weight)
-                    
+
             self.reportBadPixels(maskedImage, badPixelMask)
 
             print "Stack: ",
@@ -89,9 +88,6 @@ class weightedStatsBugTestCase(unittest.TestCase):
                 maskedImageList, afwMath.MEANCLIP, statsCtrl, weightList)
             self.reportBadPixels(coaddMaskedImage, badPixelMask)
 
-
-    
-        
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 

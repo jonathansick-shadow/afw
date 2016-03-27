@@ -11,6 +11,7 @@ __all__ = ["makeCameraFromPath", "makeCameraFromCatalogs", "makeDetector"]
 cameraSysList = [PUPIL, FOCAL_PLANE, PIXELS, TAN_PIXELS, ACTUAL_PIXELS]
 cameraSysMap = dict((sys.getSysName(), sys) for sys in cameraSysList)
 
+
 def makeDetector(detectorConfig, ampInfoCatalog, focalPlaneToPupil, plateScale):
     """!Make a Detector instance from a detector config and amp info catalog
 
@@ -50,6 +51,7 @@ def makeDetector(detectorConfig, ampInfoCatalog, focalPlaneToPupil, plateScale):
         transforms,
     )
 
+
 def makeOrientation(detectorConfig):
     """!Make an Orientation instance from a detector config
 
@@ -62,7 +64,8 @@ def makeOrientation(detectorConfig):
     pitch = afwGeom.Angle(detectorConfig.pitchDeg, afwGeom.degrees)
     roll = afwGeom.Angle(detectorConfig.rollDeg, afwGeom.degrees)
     return Orientation(offset, refPos, yaw, pitch, roll)
-    
+
+
 def makeTransformDict(transformConfigDict):
     """!Make a dictionary of CameraSys: lsst.afw.geom.XYTransform from a config dict.
 
@@ -74,8 +77,9 @@ def makeTransformDict(transformConfigDict):
     if transformConfigDict is not None:
         for key in transformConfigDict:
             transform = transformConfigDict[key].transform.apply()
-            resMap[CameraSys(key)] =  transform
+            resMap[CameraSys(key)] = transform
     return resMap
+
 
 def makeCameraFromPath(cameraConfig, ampInfoPath, shortNameFunc):
     """!Make a Camera instance from a directory of ampInfo files
@@ -96,6 +100,7 @@ def makeCameraFromPath(cameraConfig, ampInfoPath, shortNameFunc):
         ampInfoCatDict[detectorConfig.name] = ampInfoCatalog
 
     return makeCameraFromCatalogs(cameraConfig, ampInfoCatDict)
+
 
 def makeCameraFromCatalogs(cameraConfig, ampInfoCatDict):
     """!Construct a Camera instance from a dictionary of detector name: AmpInfoCatalog

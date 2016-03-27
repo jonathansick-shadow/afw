@@ -37,6 +37,7 @@ xyTransformRegistry = makeRegistry(
         '''
 )
 
+
 def makeIdentityTransform(config=None):
     """Make an IdentityXYTransform (which has no config parameters)
     """
@@ -44,11 +45,13 @@ def makeIdentityTransform(config=None):
 makeIdentityTransform.ConfigClass = Config
 xyTransformRegistry.register("identity", makeIdentityTransform)
 
+
 class OneXYTransformConfig(Config):
     transform = ConfigurableField(
         doc = "XYTransform factory",
         target = makeIdentityTransform,
     )
+
 
 def makeInvertedTransform(config):
     """Make an InvertedXYTransform
@@ -72,11 +75,13 @@ class AffineXYTransformConfig(Config):
         length = 2,
         default = (0, 0),
     )
+
+
 def makeAffineXYTransform(config):
     """Make an AffineXYTransform
     """
     linear = numpy.array(config.linear)
-    linear.shape = (2,2)
+    linear.shape = (2, 2)
     translation = numpy.array(config.translation)
     return AffineXYTransform(AffineTransform(linear, translation))
 makeAffineXYTransform.ConfigClass = AffineXYTransformConfig
@@ -90,13 +95,16 @@ class RadialXYTransformConfig(Config):
         minLength = 1,
         optional = False,
     )
+
     def validate(self):
         if len(self.coeffs) == 0:
             return
         if len(self.coeffs) == 1 or self.coeffs[0] != 0 or self.coeffs[1] == 0:
             raise RuntimeError(
-                "invalid RadialXYTransform coeffs %s: " % (self.coeffs,) \
+                "invalid RadialXYTransform coeffs %s: " % (self.coeffs,)
                 + " need len(coeffs)=0 or len(coeffs)>1, coeffs[0]==0, and coeffs[1]!=0")
+
+
 def makeRadialXYTransform(config):
     """Make a RadialXYTransform
     """
@@ -111,6 +119,8 @@ class MultiXYTransformConfig(Config):
         keytype = int,
         itemtype = OneXYTransformConfig,
     )
+
+
 def makeMultiTransform(config):
     """Make an MultiXYTransform
     """

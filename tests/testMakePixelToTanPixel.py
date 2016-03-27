@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 from __future__ import absolute_import, division
-# 
+#
 # LSST Data Management System
 # Copyright 2014 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -11,14 +11,14 @@ from __future__ import absolute_import, division
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 """
@@ -33,16 +33,18 @@ import lsst.afw.geom as afwGeom
 import lsst.afw.cameraGeom as cameraGeom
 from lsst.afw.cameraGeom import makePixelToTanPixel
 
+
 class MakePixelToTanPixelTestCaseCase(unittest.TestCase):
+
     def testCurvedFocalPlane(self):
         """Test a curved focal plane (with rectangular pixels)
         """
-        bbox = afwGeom.Box2I(afwGeom.Point2I(0,0), afwGeom.Extent2I(1000, 1000))
+        bbox = afwGeom.Box2I(afwGeom.Point2I(0, 0), afwGeom.Extent2I(1000, 1000))
         pixelSizeMm = afwGeom.Extent2D(0.02, 0.03)
         plateScale = 25.0   # arcsec/mm
         yaw = afwGeom.Angle(20, afwGeom.degrees)
-        fpPosition = afwGeom.Point2D(50, 25) # focal-plane position of ref position on detector (mm)
-        refPoint = afwGeom.Point2D(-0.5, -0.5) # ref position on detector (pos of lower left corner)
+        fpPosition = afwGeom.Point2D(50, 25)  # focal-plane position of ref position on detector (mm)
+        refPoint = afwGeom.Point2D(-0.5, -0.5)  # ref position on detector (pos of lower left corner)
         orientation = cameraGeom.Orientation(
             fpPosition,
             refPoint,
@@ -88,17 +90,16 @@ class MakePixelToTanPixelTestCaseCase(unittest.TestCase):
             prevPointPupil = pointPupil
             prevPointTanPix = pointTanPix
 
-
     def testFlatFocalPlane(self):
         """Test an undistorted focal plane (with rectangular pixels)
         """
-        bbox = afwGeom.Box2I(afwGeom.Point2I(0,0), afwGeom.Extent2I(1000, 1000))
+        bbox = afwGeom.Box2I(afwGeom.Point2I(0, 0), afwGeom.Extent2I(1000, 1000))
         pixSizeFactor = numpy.array((1.2, 0.8))
         pixelSizeMm = afwGeom.Extent2D(0.02 * pixSizeFactor[0], 0.02 * pixSizeFactor[1])
         plateScale = 25.0   # arcsec/mm
         yaw = afwGeom.Angle(20, afwGeom.degrees)
-        fpPosition = afwGeom.Point2D(50, 25) # focal-plane position of ref position on detector (mm)
-        refPoint = afwGeom.Point2D(-0.5, -0.5) # ref position on detector (pos of lower left corner)
+        fpPosition = afwGeom.Point2D(50, 25)  # focal-plane position of ref position on detector (mm)
+        refPoint = afwGeom.Point2D(-0.5, -0.5)  # ref position on detector (pos of lower left corner)
         orientation = cameraGeom.Orientation(
             fpPosition,
             refPoint,
@@ -127,6 +128,7 @@ class MakePixelToTanPixelTestCaseCase(unittest.TestCase):
             for i in range(2):
                 self.assertAlmostEquals(pointTanPix[i], predPointTanPix[i])
 
+
 def suite():
     """Returns a suite containing all the test cases in this module."""
 
@@ -136,6 +138,7 @@ def suite():
     suites += unittest.makeSuite(MakePixelToTanPixelTestCaseCase)
     suites += unittest.makeSuite(lsst.utils.tests.MemoryTestCase)
     return unittest.TestSuite(suites)
+
 
 def run(shouldExit = False):
     """Run the tests"""

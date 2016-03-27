@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division
-# 
+#
 # LSST Data Management System
 # Copyright 2015 LSST Corporation.
-# 
+#
 # This product includes software developed by the
 # LSST Project (http://www.lsst.org/).
 #
@@ -10,14 +10,14 @@ from __future__ import absolute_import, division
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
-# You should have received a copy of the LSST License Statement and 
-# the GNU General Public License along with this program.  If not, 
+#
+# You should have received a copy of the LSST License Statement and
+# the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 """Utilities that should be imported into the lsst.afw.coord namespace when lsst.afw.coord is used
@@ -28,6 +28,7 @@ import lsst.utils.tests
 import lsst.afw.geom as afwGeom
 
 __all__ = ["assertCoordsNearlyEqual"]
+
 
 @lsst.utils.tests.inTestCase
 def assertCoordsNearlyEqual(testCase, coord0, coord1, maxDiff=0.001*afwGeom.arcseconds, msg="Coords differ"):
@@ -48,4 +49,4 @@ def assertCoordsNearlyEqual(testCase, coord0, coord1, maxDiff=0.001*afwGeom.arcs
     measDiff = coord0.toIcrs().angularSeparation(coord1.toIcrs())
     if measDiff > maxDiff:
         testCase.fail("%s: measured angular separation %s arcsec > max allowed %s arcsec" %
-            (msg, measDiff.asArcseconds(), maxDiff.asArcseconds()))
+                      (msg, measDiff.asArcseconds(), maxDiff.asArcseconds()))
